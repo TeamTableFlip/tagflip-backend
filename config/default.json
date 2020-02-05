@@ -1,0 +1,15 @@
+{
+  "name": "TagFlip",
+  "version": "0.0.1",
+  "serverPort": 3000,
+  "allowedOrigins": [],
+
+  "sequelize": {
+    "connection": null,
+    "saltBytes": 16
+  },
+  "dp": {
+    "pass": null,
+    "user": null
+  }
+}

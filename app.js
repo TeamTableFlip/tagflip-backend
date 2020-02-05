@@ -1,7 +1,9 @@
+
+let config = require('./config/config'); // process.env["NODE_CONFIG_DIR"] = __dirname + "/configDir/"; to override location from default ./config
 let express = require('express');
 let path = require('path');
 let cookieParser = require('cookie-parser');
-let logger = require('morgan');
+let logger = require('morgan'); // logging middle ware for express, TODO configure log rotation
 
 let indexRouter = require('./routes/index');
 let testRouter = require('./routes/test');
@@ -12,7 +14,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'))); // configure later with GUI...
 
 app.use('/', indexRouter);
 app.use('/test', testRouter);
@@ -25,5 +27,9 @@ app.use(function(err, req, res, next) {
 
   res.sendStatus(err.status || 500)
 });
+
+
+// some testing for development
+console.debug(`using config: ${JSON.stringify(config)}`);
 
 module.exports = app;
