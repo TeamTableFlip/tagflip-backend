@@ -38,5 +38,5 @@ package-lock.json
 
 
 # user secrets and configs
-./config/local*
-./config/*secret*
+/config/local*
+/config/*secret*
