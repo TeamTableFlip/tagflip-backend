@@ -1,4 +1,4 @@
-import express from 'express';
+let express = require('express');
 
 let router = express.Router();
 /**
