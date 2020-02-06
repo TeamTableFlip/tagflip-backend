@@ -29,7 +29,13 @@ app.use(function(err, req, res, next) {
 });
 
 
+
+
 // some testing for development
 console.debug(`using config: ${JSON.stringify(config)}`);
+
+let {corpus} = require('./persitence/sequelize');
+// simple test query
+console.log(corpus.findAll().then((f)=>{console.log(f)}));
 
 module.exports = app;

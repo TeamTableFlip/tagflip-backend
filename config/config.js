@@ -11,7 +11,7 @@ console.info("TODO: parsing system environment configuration");
 
 try {
     console.info("searching for local configs");
-    if (fs.existsSync(__dirname + '/config.js')) {
+    if (fs.existsSync(__dirname + '/local.js')) {
         console.info("local config found, merging configs (overwriting env vars!)");
         let localConfig = require('./local');
         config = ld.merge(config, localConfig);
