@@ -34,8 +34,20 @@ app.use(function(err, req, res, next) {
 // some testing for development
 console.debug(`using config: ${JSON.stringify(config)}`);
 
-let {corpus} = require('./persitence/sequelize');
+let {corpus} = require('./persitence/sql/corpus');
+let {document} = require('./persitence/sql/document');
+let {annotation} = require('./persitence/sql/annotation');
+let {tag} = require('./persitence/sql/tag');
+let {annotationset} = require('./persitence/sql/annotationset');
+let {corpus_annotationset} = require('./persitence/sql/corpus_annotationset');
+//
+// console.log(corpus.getTableName());
+// console.log(document.getTableName());
+// console.log(annotation.getTableName());
+// console.log(tag.getTableName());
+// console.log(annotationset.getTableName());
+// console.log(corpus_annotationset.getTableName());
 // simple test query
-console.log(corpus.findAll().then((f)=>{console.log(f)}));
+//console.log(corpus.findAll().then((f)=>{console.log(f)}));
 
 module.exports = app;
