@@ -18,7 +18,7 @@ function listAll(controller) {
             res.send(items);
         }).catch((err) => {
             console.error(err);
-            res.status(500).send(err);
+            res.status(500);
         });
     };
 }
@@ -35,7 +35,7 @@ function createOne(controller) {
             res.status(200).send(newItem);
         }).catch((err)=>{
             console.error(err);
-            res.status(500).send(err);
+            res.status(500);
         });
     };
 }
@@ -57,7 +57,7 @@ function getOne(controller, property_name) {
             }
         }).catch((err)=>{
             console.error(err);
-            res.status(500).send(err);
+            res.status(500);
         });
     };
 }
@@ -79,7 +79,7 @@ function updateOne(controller, property_name) {
             }
         }).catch((err)=>{
             console.error(err);
-            res.status(500).send(err);
+            res.status(500);
         });
     };
 }
@@ -101,7 +101,71 @@ function deleteOne(controller, property_name) {
             }
         }).catch((err)=>{
             console.error(err);
-            res.status(500).send(err);
+            res.status(500);
+        });
+    };
+}
+
+/**
+ * Calls add function of the controller for adding reference object and resolves its Promise.
+ *
+ * @param func The controller-function to be used.
+ * @param property_name The property of req.params to be used, as in controller.deleteOne(property).
+ * @param other_property_name associated model instance id.
+ * @returns {Function} ExpressJS routing function (req, res, next) => { ... }.
+ */
+function setOther(func, property_name, other_property_name) {
+    return (req, res, next) => {
+        func(req.params[property_name], req.params[other_property_name]).then(newItem => {
+            res.status(200).send(newItem);
+        }).catch((err)=>{
+            console.error(err);
+            res.status(500);
+        });
+    };
+}
+
+/**
+ * Calls delete function of the controller for removing reference object and resolves its Promise.
+ *
+ * @param func The controller-function to be used.
+ * @param property_name The property of req.params to be used, as in controller.deleteOne(property).
+ * @param other_property_name associated model instance id.
+ * @returns {Function} ExpressJS routing function (req, res, next) => { ... }.
+ */
+function unsetOther(func, property_name, other_property_name ) {
+    return (req, res, next) => {
+        func(req.params[property_name], req.params[other_property_name]).then(deleted => {
+            if (deleted) {
+                res.sendStatus(200);
+            } else {
+                res.sendStatus(500); // TODO better responses....
+            }
+        }).catch((err)=>{
+            console.error(err);
+            res.status(500);
+        });
+    };
+}
+
+/**
+ * Calls getter function of the controller for retrieving reference objects.
+ *
+ * @param func The controller-function to be used.
+ * @param property_name The property of req.params to be used, as in controller.deleteOne(property).
+ * @returns {Function} ExpressJS routing function (req, res, next) => { ... }.
+ */
+function listOther(func, property_name ) {
+    return (req, res, next) => {
+        func(req.params[property_name]).then(items => {
+            if (items) {
+                res.status(200).send(items);
+            } else {
+                res.sendStatus(404);
+            }
+        }).catch((err)=>{
+            console.error(err);
+            res.status(500);
         });
     };
 }
@@ -111,5 +175,8 @@ module.exports = {
     createOne,
     getOne,
     updateOne,
-    deleteOne
+    deleteOne,
+    setOther,
+    unsetOther,
+    listOther
 };

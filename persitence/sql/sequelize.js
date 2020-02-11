@@ -32,9 +32,96 @@ connection.authenticate()
     });
 
 
+/* make models with connection available: */
+let {annotation} = require('./annotation');
+let {annotationset} = require('./annotationset');
+let {corpus_annotationset} = require('./corpus_annotationset');
+let {document} = require('./document');
+let {corpus} = require('./corpus');
+let {tag} = require('./tag');
+
+let tagModel = tag(connection);
+let corpusModel = corpus(connection);
+let documentModel = document(connection);
+let corpus_annotationsetModel = corpus_annotationset(connection);
+let annotationsetModel = annotationset(connection);
+let annotationModel = annotation(connection);
+
+annotationModel.belongsTo(annotationsetModel, {
+    as: 'annotationset',
+    foreignKey: 's_id',
+    sourceKey: 'a_id',
+    onDelete: 'CASCADE'
+});
+
+annotationsetModel.hasMany(annotationModel, {
+    as: 'annotations',
+    sourceKey: 's_id',
+    foreignKey: 's_id'
+});
 
 
-/* make connection available: */
+annotationsetModel.belongsToMany(corpusModel, {
+    through: corpus_annotationsetModel,
+    sourceKey: 's_id',
+    foreignKey: 's_id',
+    onDelete: 'CASCADE'
+});
+
+corpusModel.belongsToMany(annotationsetModel, {
+    through: corpus_annotationsetModel,
+    sourceKey: 'c_id',
+    foreignKey: 'c_id',
+    onDelete: 'CASCADE'
+});
+
+
+documentModel.belongsTo(corpusModel, {
+    as: 'corpus',
+    foreignKey: 'c_id',
+    sourceKey: 'd_id',
+    onDelete: 'CASCADE'
+});
+
+corpusModel.hasMany(documentModel, {
+    as: 'documents',
+    sourceKey: 'c_id',
+    foreignKey: 'c_id'
+});
+
+tagModel.belongsTo(annotationModel, {
+    as: 'annotation',
+    onDelete: 'CASCADE',
+    sourceKey: 't_id',
+    foreignKey: 'a_id'
+});
+
+annotationModel.hasMany(tagModel, {
+    as: 'tags',
+    sourceKey: 'a_id',
+    foreignKey: 'a_id'
+});
+
+tagModel.belongsTo(documentModel, {
+    as: 'document',
+    foreignKey: 'd_id',
+    sourceKey: 't_id',
+    onDelete: 'CASCADE'
+});
+
+documentModel.hasMany(tagModel,  {
+    as: 'tags',
+    sourceKey: 'd_id',
+    foreignKey: 'd_id'
+});
+
+
 module.exports = {
-    connection
+    connection,
+    annotationsetModel,
+    annotationModel,
+    documentModel,
+    corpusModel,
+    tagModel,
+    corpus_annotationsetModel
 };

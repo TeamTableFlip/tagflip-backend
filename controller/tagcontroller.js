@@ -1,12 +1,12 @@
-let {tag} = require('../persitence/sql/tag');
+let {tagModel} = require('../persitence/sql/sequelize');
 let baseController = require('./basecontroller');
 
 function listAll() {
-    return baseController.listAll()(tag);
+    return baseController.listAll()(tagModel);
 }
 
 function get(id) {
-    return baseController.get(id)(tag);
+    return baseController.get(id)(tagModel);
 }
 
 function create(item) {
@@ -18,15 +18,15 @@ function create(item) {
             end_index: item.end_index,
         }
     };
-    return baseController.create(item)(tag, findOrCreateOptions);
+    return baseController.create(item)(tagModel, findOrCreateOptions);
 }
 
 function del(id) {
-    return baseController.del(id)(tag, 't_id');
+    return baseController.del(id)(tagModel, 't_id');
 }
 
 function update(id, item) {
-    return baseController.update(id, item)(tag, 't_id');
+    return baseController.update(id, item)(tagModel, 't_id');
 }
 
 
