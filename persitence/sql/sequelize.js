@@ -6,10 +6,11 @@
  */
 
 const {Sequelize} = require('sequelize');
+const config = require('../../config/config');
 /* create connection: */
-const connection= new Sequelize('tagflip', 'root', '', {
-    host: 'localhost',
-    dialect: 'mysql'
+const connection= new Sequelize(config.db.name, config.db.user, config.db.password, {
+    host: config.db.host,
+    dialect: config.db.dialect
     // pool: {
     //     max: 10,
     //     min: 0,

@@ -8,8 +8,15 @@
     "connection": null,
     "saltBytes": 16
   },
-  "dp": {
-    "pass": null,
-    "user": null
+  "db": {
+    "name": "tagflip",
+    "host": "localhost",
+    "dialect": "mysql",
+    "password": "",
+    "user": "root"
+  },
+  "files": {
+    "prefix": "~/tagflip/data"
   }
+
 }
