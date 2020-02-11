@@ -9,6 +9,9 @@ let indexRouter = require('./routes/index');
 let testRouter = require('./routes/test');
 let corpusRouter = require('./routes/corpuscrud');
 let documentRouter = require('./routes/documentcrud');
+let annotationSetRouter = require('./routes/annotationsetcrud');
+let annotationRouter = require('./routes/annotationcrud');
+let tagRouter = require('./routes/tagcrud');
 
 let app = express();
 
@@ -20,6 +23,9 @@ app.use(express.static(path.join(__dirname, 'public'))); // configure later with
 
 app.use('/', indexRouter);
 app.use('/corpus', corpusRouter);
+app.use('/annotation', annotationRouter);
+app.use('/tag', tagRouter);
+app.use('/annotationset', annotationSetRouter);
 app.use('/document', documentRouter);
 app.use('/test', testRouter);
 

@@ -1,8 +1,8 @@
 function listAll() {
     return model => {
         return new Promise((resolve, reject) => {
-            model.findAll().then((corpus) => {
-                resolve(corpus);
+            model.findAll().then((instance) => {
+                resolve(instance);
             }).catch((err) => reject(err))
         })
     };
