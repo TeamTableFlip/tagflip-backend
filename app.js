@@ -7,6 +7,7 @@ let logger = require('morgan'); // logging middle ware for express, TODO configu
 
 let indexRouter = require('./routes/index');
 let testRouter = require('./routes/test');
+let corpusRouter = require('./routes/corpuscrud');
 
 let app = express();
 
@@ -17,6 +18,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public'))); // configure later with GUI...
 
 app.use('/', indexRouter);
+app.use('/corpus', corpusRouter);
 app.use('/test', testRouter);
 
 // error handler
@@ -27,27 +29,5 @@ app.use(function(err, req, res, next) {
 
   res.sendStatus(err.status || 500)
 });
-
-
-
-
-// some testing for development
-console.debug(`using config: ${JSON.stringify(config)}`);
-
-let {corpus} = require('./persitence/sql/corpus');
-let {document} = require('./persitence/sql/document');
-let {annotation} = require('./persitence/sql/annotation');
-let {tag} = require('./persitence/sql/tag');
-let {annotationset} = require('./persitence/sql/annotationset');
-let {corpus_annotationset} = require('./persitence/sql/corpus_annotationset');
-//
-// console.log(corpus.getTableName());
-// console.log(document.getTableName());
-// console.log(annotation.getTableName());
-// console.log(tag.getTableName());
-// console.log(annotationset.getTableName());
-// console.log(corpus_annotationset.getTableName());
-// simple test query
-//console.log(corpus.findAll().then((f)=>{console.log(f)}));
 
 module.exports = app;
