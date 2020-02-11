@@ -5,6 +5,9 @@
  */
 
 let fs = require('fs');
+let path = require('path');
+let config = require('../../config/config');
+
 
 function checkFileExists(filepath) {
     return new Promise((resolve, reject) => {
@@ -14,43 +17,63 @@ function checkFileExists(filepath) {
     });
 }
 
+
 async function readFile(fileName) {
+    fileName = path.join(config.files.prefix, fileName);
+    console.info("reading file: " + fileName);
     if (await checkFileExists(fileName)) {
-        return  new Promise((resolve, reject) => {
-            fs.readFile(fileName, (err, data) => {
-                if (err) reject(err);
-                resolve(data);
-            });
+        fs.readFile(fileName, (err, data) => {
+            if (err) throw err;
+            return data;
         });
     } else {
         throw Error("file not found");
     }
 }
 
-async function saveFile(fileName, override, data) {
+async function saveFile(fileName, override = false, data) {
+    fileName = path.join(config.files.prefix, fileName);
+    console.info("saving file: " + fileName);
     if (!override && (await checkFileExists(fileName))) {
         throw Error("file with that path and name already exists! (override false)");
     }
-    return new Promise((resolve, reject) => {
-        fs.writeFile(fileName, data, encoding,  (err) => {
-            if (err) reject(err);
-            resolve(true);
-        });
+    fs.writeFile(fileName, data, encoding,  (err) => {
+        if (err) throw err;
+        return true;
     });
 }
 
 async function deleteFile(fileName) {
+    fileName = path.join(config.files.prefix, fileName);
+    console.info("deleting file: " + fileName);
     if (!(await checkFileExists(fileName))) {
         throw Error ("file does not exist");
     }
-    return new Promise((resolve, reject) => {
-        fs.unlink(fileName,  (err) => {
-            if (err) reject(err);
-            resolve(true);
-        });
+    fs.unlink(fileName,  (err) => {
+        if (err) throw err;
+        return true;
     });
 }
 
+async function moveFile(fileNameSource, fileNameTarget, override) {
+    fileNameSource = path.join(config.files.prefix, fileNameSource);
+    fileNameTarget = path.join(config.files.prefix, fileNameTarget);
+
+    console.info("moving file from " + fileNameSource + " to "+ fileNameTarget);
+    if (!(await checkFileExists(fileNameSource))) {
+        throw Error ("source does not exist");
+    }
+    if (!override && await checkFileExists(fileNameTarget)) {
+        throw Error ("target file does already exist");
+    }
+    fs.copyFile(fileNameSource, fileNameTarget ,(err) => {
+        if (err) throw err;
+        fs.unlink(fileNameSource,  (err) => { // delete source when done
+            if (err) throw err;
+            return true;
+        });
+    });
+}
 
 module.exports = {
     readFile,
