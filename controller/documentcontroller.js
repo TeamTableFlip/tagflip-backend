@@ -9,15 +9,17 @@ async function listAll() {
     let documents = await document.findAll();
     if (documents) {
         for (let document of documents) { // TODO error handling when operations fail have way through...
-            document.text = await fileManager.readFile(document.fileName);
+            let data  = await fileManager.readFile(document.filename);
+            document.dataValues['text'] = data.toString(); // TODO maybe find a better way of adding virtual attributes?
         }
     }
+    console.log(documents);
     return documents;
 }
 
 async function get(id) {
     let doc = await document.findByPk(id);
-    doc.text = await fileManager.readFile(doc.fileName);
+    doc.text = await fileManager.readFile(doc.filename);
 }
 
 async function create(item) {   // TODO make this a atomic transaction!
@@ -34,7 +36,7 @@ async function create(item) {   // TODO make this a atomic transaction!
     }
     let [document, created] = await document.findOrCreate({
         where: {
-            fileName: item.fileName,
+            filename: item.filename,
             document_hash: hash,
             last_edited: ts
         }
@@ -47,7 +49,7 @@ async function create(item) {   // TODO make this a atomic transaction!
 async function del(id) {  // TODO make this a atomic transaction!
     let doc = await document.findByPk(id);
     await document.destroy({where: {d_id: id}});
-    await fileManager.deleteFile(doc.fileName);
+    await fileManager.deleteFile(doc.filename);
     return id;
 }
 
@@ -62,7 +64,7 @@ async function update(id, item) {   // TODO make this a atomic transaction!
     let updatesArray = await document.update(item, {where: {d_id: id}});
     if (updatesArray && updatesArray.size === 1) {
         let new_doc = await document.findByPk(id);
-        if (new_doc.fileName !== old_doc.fileName) await fileManager.moveFile(old_doc.fileName, new_doc.fileName);
+        if (new_doc.filename !== old_doc.filename) await fileManager.moveFile(old_doc.filename, new_doc.filename);
         return new_doc;
     } else {
         throw Error("failed to updates items properly");

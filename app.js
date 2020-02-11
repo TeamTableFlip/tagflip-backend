@@ -8,6 +8,7 @@ let logger = require('morgan'); // logging middle ware for express, TODO configu
 let indexRouter = require('./routes/index');
 let testRouter = require('./routes/test');
 let corpusRouter = require('./routes/corpuscrud');
+let documentRouter = require('./routes/documentcrud');
 
 let app = express();
 
@@ -19,6 +20,7 @@ app.use(express.static(path.join(__dirname, 'public'))); // configure later with
 
 app.use('/', indexRouter);
 app.use('/corpus', corpusRouter);
+app.use('/document', documentRouter);
 app.use('/test', testRouter);
 
 // error handler

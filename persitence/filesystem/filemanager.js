@@ -9,7 +9,7 @@ let path = require('path');
 let config = require('../../config/config');
 
 
-function checkFileExists(filepath) {
+function _checkFileExists(filepath) {
     return new Promise((resolve, reject) => {
         fs.access(filepath, fs.F_OK, error => {
             resolve(!error);
@@ -17,63 +17,98 @@ function checkFileExists(filepath) {
     });
 }
 
+function _mkdirs(filepath) {
+    return new Promise((resolve, reject) => {
+        fs.mkdir(filepath,  {recursive: true }, (err) => {
+            if (err) reject(err)
+            else resolve();
+        });
+    });
+}
 
+
+function _readFileData(filepath) {
+    return new Promise((resolve, reject) => {
+        fs.readFile(filepath, (err, data) => {
+            if (err) reject(err);
+            resolve(data);
+        });
+    });
+}
+
+function _saveFileData(filePath, data) {
+    return new Promise((resolve, reject) => {
+        fs.writeFile(filePath, data, encoding,  (err) => {
+            if (err) reject(err);
+            resolve(true);
+        });
+    });
+}
+
+function _unlinkFile(filePath) {
+    return new Promise((resolve, reject) => {
+        fs.unlink(filePath,  (err) => {
+            if (err) reject(err);
+            resolve(true);
+        });
+    });
+}
+
+function _copyFile (source, target) {
+    return new Promise((resolve, reject) => {
+        fs.copyFile(source, target ,(err) => {
+            if (err) reject(err);
+            resolve(new Promise((resolve, reject) => {
+                fs.unlink(source,  (err) => { // delete source when done
+                    if (err) reject(err);
+                    resolve(true);
+                });
+            }));
+        });
+    });
+
+}
 async function readFile(fileName) {
     fileName = path.join(config.files.prefix, fileName);
     console.info("reading file: " + fileName);
-    if (await checkFileExists(fileName)) {
-        fs.readFile(fileName, (err, data) => {
-            if (err) throw err;
-            return data;
-        });
+    if (await _checkFileExists(fileName)) {
+        return await _readFileData(fileName);
     } else {
         throw Error("file not found");
     }
 }
 
 async function saveFile(fileName, override = false, data) {
-    fileName = path.join(config.files.prefix, fileName);
-    await fs.mkdir(fileName,  {recursive: true }, (err) => {throw Error("can not create target folder")});
     console.info("saving file: " + fileName);
-    if (!override && (await checkFileExists(fileName))) {
+    fileName = path.join(config.files.prefix, fileName);
+    await _mkdirs(fileName);
+    if (!override && (await _checkFileExists(fileName))) {
         throw Error("file with that path and name already exists! (override false)");
     }
-    fs.writeFile(fileName, data, encoding,  (err) => {
-        if (err) throw err;
-        return true;
-    });
+    return await _saveFileData(fileName, data);
 }
 
 async function deleteFile(fileName) {
-    fileName = path.join(config.files.prefix, fileName);
     console.info("deleting file: " + fileName);
-    if (!(await checkFileExists(fileName))) {
+    fileName = path.join(config.files.prefix, fileName);
+    if (!(await _checkFileExists(fileName))) {
         throw Error ("file does not exist");
     }
-    fs.unlink(fileName,  (err) => {
-        if (err) throw err;
-        return true;
-    });
+    _unlinkFile(fileName);
 }
 
 async function moveFile(fileNameSource, fileNameTarget, override = false) {
+    console.info("moving file from " + fileNameSource + " to "+ fileNameTarget);
     fileNameSource = path.join(config.files.prefix, fileNameSource);
     fileNameTarget = path.join(config.files.prefix, fileNameTarget);
-    await fs.mkdir(fileNameTarget,  {recursive: true }, (err) => {throw Error("can not create target folder")});
-    console.info("moving file from " + fileNameSource + " to "+ fileNameTarget);
-    if (!(await checkFileExists(fileNameSource))) {
+    await _mkdirs(fileNameTarget);
+    if (!(await _checkFileExists(fileNameSource))) {
         throw Error ("source does not exist");
     }
-    if (!override && await checkFileExists(fileNameTarget)) {
+    if (!override && await _checkFileExists(fileNameTarget)) {
         throw Error ("target file does already exist");
     }
-    fs.copyFile(fileNameSource, fileNameTarget ,(err) => {
-        if (err) throw err;
-        fs.unlink(fileNameSource,  (err) => { // delete source when done
-            if (err) throw err;
-            return true;
-        });
-    });
+    return await _copyFile(fileNameSource, fileNameTarget);
 }
 
 module.exports = {
