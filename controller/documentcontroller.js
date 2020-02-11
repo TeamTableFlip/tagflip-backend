@@ -60,15 +60,16 @@ async function update(id, item) {   // TODO make this a atomic transaction!
             item.id = id;
         }
     }
-    let old_doc = await document.findByPk(id);
-    let updatesArray = await document.update(item, {where: {d_id: id}});
-    if (updatesArray && updatesArray.size === 1) {
+    try {
+        let old_doc = await document.findByPk(id);
+        let updatesArray = await document.update(item, {where: {d_id: id}});
+        // TODO do something with return value (seems to be very ambiguous)
         let new_doc = await document.findByPk(id);
         if (new_doc.filename !== old_doc.filename) await fileManager.moveFile(old_doc.filename, new_doc.filename);
-        new_doc.dataValues['text'] = await fileManager.readFile(old_doc.filename);
+        new_doc.dataValues['text'] = await fileManager.readFile(new_doc.filename);
         return new_doc;
-    } else {
-        throw Error("failed to updates items properly");
+    } catch (e) {
+        throw e;
     }
 }
 
