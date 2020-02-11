@@ -1,6 +1,9 @@
 let {document} = require('../persitence/sql/document');
-let {connection} = require('../persitence/sql/sequelize');
+let {corpus} = require('../persitence/sql/corpus');
+let hashing = require('../persitence/hashing');
 let fileManager = require('../persitence/filesystem/filemanager');
+
+// TODO define error types for better returns in rest api.
 
 async function listAll() {
     let documents = await document.findAll();
@@ -20,9 +23,20 @@ async function get(id) {
 async function create(item) {   // TODO make this a atomic transaction!
     if (item.id)
         item.id = undefined;
+    if (!item.text)
+        throw Error("no text specified");
+    let hash = hashing.sha256Hash(item.text);
+    let ts = Date.now();
+    let corpus = await corpus.findByPk(item.c_id);
+    let corpusDocuments = await corpus.getDocuments();
+    for (let doc of corpusDocuments) {
+        if (doc.document_hash === hash) throw Error("file content already present in this corpus");
+    }
     let [document, created] = await document.findOrCreate({
         where: {
-            fileName: item.fileName
+            fileName: item.fileName,
+            document_hash: hash,
+            last_edited: ts
         }
     });
     if (item.text) await fileManager.saveFile(document.filename, !created, item.text);
@@ -44,14 +58,16 @@ async function update(id, item) {   // TODO make this a atomic transaction!
             item.id = id;
         }
     }
+    let old_doc = await document.findByPk(id);
     let updatesArray = await document.update(item, {where: {d_id: id}});
     if (updatesArray && updatesArray.size === 1) {
-        return document.findByPk(id);
+        let new_doc = await document.findByPk(id);
+        if (new_doc.fileName !== old_doc.fileName) await fileManager.moveFile(old_doc.fileName, new_doc.fileName);
+        return new_doc;
     } else {
         throw Error("failed to updates items properly");
     }
 }
-
 
 module.exports = {
     listAll: listAll,

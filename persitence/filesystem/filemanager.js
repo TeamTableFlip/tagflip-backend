@@ -33,6 +33,7 @@ async function readFile(fileName) {
 
 async function saveFile(fileName, override = false, data) {
     fileName = path.join(config.files.prefix, fileName);
+    await fs.mkdir(fileName,  {recursive: true }, (err) => {throw Error("can not create target folder")});
     console.info("saving file: " + fileName);
     if (!override && (await checkFileExists(fileName))) {
         throw Error("file with that path and name already exists! (override false)");
@@ -55,10 +56,10 @@ async function deleteFile(fileName) {
     });
 }
 
-async function moveFile(fileNameSource, fileNameTarget, override) {
+async function moveFile(fileNameSource, fileNameTarget, override = false) {
     fileNameSource = path.join(config.files.prefix, fileNameSource);
     fileNameTarget = path.join(config.files.prefix, fileNameTarget);
-
+    await fs.mkdir(fileNameTarget,  {recursive: true }, (err) => {throw Error("can not create target folder")});
     console.info("moving file from " + fileNameSource + " to "+ fileNameTarget);
     if (!(await checkFileExists(fileNameSource))) {
         throw Error ("source does not exist");
@@ -78,5 +79,6 @@ async function moveFile(fileNameSource, fileNameTarget, override) {
 module.exports = {
     readFile,
     saveFile,
-    deleteFile
+    deleteFile,
+    moveFile
 };

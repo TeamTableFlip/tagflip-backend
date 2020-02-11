@@ -20,14 +20,26 @@ function createSalt(length) {
  * @param salt The salt to be used to hash with the password.
  * @returns {Buffer|string} The SHA256 hex-formatted string of the password and the salt.
  */
-function sha256(password, salt) {
+function sha256PW(password, salt) {
     let shasum = crypto.createHmac('sha256', salt);
     shasum.update(password);
     return shasum.digest('hex');
 }
 
+/**
+ * Creates a sh256 hash value using a clear text password and a hex-formatted salt.
+ * @param password The password to be hashed.
+ * @param salt The salt to be used to hash with the password.
+ * @returns {Buffer|string} The SHA256 hex-formatted string of the password and the salt.
+ */
+function sha256Hash(data) {
+    let shasum = crypto.createHash('sha256');
+    shasum.update(data);
+    return shasum.digest('hex');
+}
 
 module.exports = {
     createSalt,
-    sha256
+    sha256PW,
+    sha256Hash
 };

@@ -12,7 +12,8 @@ let document =  connection.define('document', {
     c_id: {
         type:  DataTypes.INTEGER({length: 11}),
         foreignKey: true,
-        allowNull: false
+        allowNull: false,
+        unique: 'unique_doc_per_corpus'
     },
     filename: {
         type: DataTypes.STRING(255),
@@ -24,7 +25,8 @@ let document =  connection.define('document', {
     },
     document_hash: {
         type: DataTypes.CHAR(64),
-        allowNull: false
+        allowNull: false,
+        unique: 'unique_doc_per_corpus'
     }
 }, {
     timestamps: false,
