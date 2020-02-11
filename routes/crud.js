@@ -17,6 +17,7 @@ function listAll(controller) {
         controller.listAll().then(items => {
             res.send(items);
         }).catch((err) => {
+            console.error(err);
             res.status(500).send(err);
         });
     };
@@ -55,6 +56,7 @@ function getOne(controller, property_name) {
                 res.status(200).send(item);
             }
         }).catch((err)=>{
+            console.error(err);
             res.status(500).send(err);
         });
     };
@@ -76,6 +78,7 @@ function updateOne(controller, property_name) {
                 res.sendStatus(404);
             }
         }).catch((err)=>{
+            console.error(err);
             res.status(500).send(err);
         });
     };
@@ -97,6 +100,7 @@ function deleteOne(controller, property_name) {
                 res.sendStatus(500); // TODO better responses....
             }
         }).catch((err)=>{
+            console.error(err);
             res.status(500).send(err);
         });
     };

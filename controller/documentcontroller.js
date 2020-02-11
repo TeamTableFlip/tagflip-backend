@@ -8,18 +8,17 @@ let fileManager = require('../persitence/filesystem/filemanager');
 async function listAll() {
     let documents = await document.findAll();
     if (documents) {
-        for (let document of documents) { // TODO error handling when operations fail have way through...
-            let data  = await fileManager.readFile(document.filename);
-            document.dataValues['text'] = data.toString(); // TODO maybe find a better way of adding virtual attributes?
+        for (let doc of documents) { // TODO error handling when operations fail have way through...
+            doc.dataValues['text'] = await fileManager.readFile(document.filename);
         }
     }
-    console.log(documents);
     return documents;
 }
 
 async function get(id) {
     let doc = await document.findByPk(id);
-    doc.text = await fileManager.readFile(doc.filename);
+    doc.dataValues['text'] = await fileManager.readFile(doc.filename) // TODO find a better way of adding attributes?
+    return doc;
 }
 
 async function create(item) {   // TODO make this a atomic transaction!
@@ -29,21 +28,22 @@ async function create(item) {   // TODO make this a atomic transaction!
         throw Error("no text specified");
     let hash = hashing.sha256Hash(item.text);
     let ts = Date.now();
-    let corpus = await corpus.findByPk(item.c_id);
-    let corpusDocuments = await corpus.getDocuments();
+    let cor = await corpus.findByPk(item.c_id);
+    let corpusDocuments = await cor.getDocuments();
     for (let doc of corpusDocuments) {
         if (doc.document_hash === hash) throw Error("file content already present in this corpus");
     }
-    let [document, created] = await document.findOrCreate({
+    let [doc, created] = await document.findOrCreate({
         where: {
+            c_id: item.c_id,
             filename: item.filename,
             document_hash: hash,
             last_edited: ts
         }
     });
-    if (item.text) await fileManager.saveFile(document.filename, !created, item.text);
-    document.text = item.text;
-    return document;
+    if (item.text) await fileManager.saveFile(doc.filename, !created, item.text);
+    doc.dataValues['text'] = item.text;
+    return doc;
 }
 
 async function del(id) {  // TODO make this a atomic transaction!
@@ -65,6 +65,7 @@ async function update(id, item) {   // TODO make this a atomic transaction!
     if (updatesArray && updatesArray.size === 1) {
         let new_doc = await document.findByPk(id);
         if (new_doc.filename !== old_doc.filename) await fileManager.moveFile(old_doc.filename, new_doc.filename);
+        new_doc.dataValues['text'] = await fileManager.readFile(old_doc.filename);
         return new_doc;
     } else {
         throw Error("failed to updates items properly");

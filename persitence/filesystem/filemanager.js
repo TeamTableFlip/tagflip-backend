@@ -19,7 +19,7 @@ function _checkFileExists(filepath) {
 
 function _mkdirs(filepath) {
     return new Promise((resolve, reject) => {
-        fs.mkdir(filepath,  {recursive: true }, (err) => {
+        fs.mkdir(path.dirname(filepath),  {recursive: true }, (err) => {
             if (err) reject(err)
             else resolve();
         });
@@ -36,7 +36,7 @@ function _readFileData(filepath) {
     });
 }
 
-function _saveFileData(filePath, data) {
+function _saveFileData(filePath, data, encoding = 'utf-8') {
     return new Promise((resolve, reject) => {
         fs.writeFile(filePath, data, encoding,  (err) => {
             if (err) reject(err);
@@ -72,7 +72,7 @@ async function readFile(fileName) {
     fileName = path.join(config.files.prefix, fileName);
     console.info("reading file: " + fileName);
     if (await _checkFileExists(fileName)) {
-        return await _readFileData(fileName);
+        return (await _readFileData(fileName)).toString();
     } else {
         throw Error("file not found");
     }
