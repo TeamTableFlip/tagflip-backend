@@ -13,7 +13,7 @@ let documentRouter = require('./routes/documentcrud');
 
 let corsOptions = {
   origin: function (origin, callback) {
-    if (config.allowedOrigins.indexOf(origin) !== -1) {
+    if (!origin || config.allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true)
     } else {
       callback(new Error('Not allowed by CORS'))
