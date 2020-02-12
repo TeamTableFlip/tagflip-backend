@@ -27,7 +27,7 @@ function create(item) {
             item.id = undefined;
         return new Promise((resolve, reject) => {
             optionsValidator(findOrCreateOptions).then(()=> {
-                model.findOrCreate(findOrCreateOptions).then((instance, created) => {
+                model.findOrCreate(findOrCreateOptions).then(([instance, created]) => {
                     resolve(instance);
                 }).catch((err) => {reject(err)});
             }).catch((err)=> {reject(err)});
