@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "serverPort": 3000,
   "allowedOrigins": [],
-
+  "delayResponse": 0,
   "sequelize": {
     "connection": null,
     "saltBytes": 16

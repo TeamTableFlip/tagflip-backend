@@ -2,6 +2,7 @@
 let config = require('./config/config'); // process.env["NODE_CONFIG_DIR"] = __dirname + "/configDir/"; to override location from default ./config
 let express = require('express');
 let path = require('path');
+let cors = require('cors');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan'); // logging middle ware for express, TODO configure log rotation
 
@@ -12,13 +13,33 @@ let annotationSetRouter = require('./routes/AnnotationSetController');
 let annotationRouter = require('./routes/AnnotationController');
 let tagRouter = require('./routes/TagController');
 
+let corsOptions = {
+  origin: function (origin, callback) {
+    if (config.allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
+  credentials: true
+}
+
 let app = express();
 
+app.use(cors(corsOptions))
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public'))); // configure later with GUI...
+
+// Simulate delay
+if(config.delayResponse > 0) {
+  app.use((req, res, next) => {
+    setTimeout(() => next(), config.delayResponse);
+  });
+}
+
 
 app.use('/', indexRouter);
 app.use('/corpus', corpusRouter);
