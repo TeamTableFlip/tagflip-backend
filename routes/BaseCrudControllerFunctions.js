@@ -1,9 +1,20 @@
-/*
- * GET /CRUD/corpus            findAll
- * POST /CRUD/corpus           createOne
- * GET /CRUD/corpus/{c_id}     getOne
- * PUT /CRUD/corpus/{c_id}     alterOne
- * DELETE /CRUD/corpus/{c_id}  deleteOne
+/**
+ * provides basic function wrappers for following functionality:
+ *
+ * for primary type:
+ *
+ * GET /CRUD/type            findAll
+ * POST /CRUD/type           createOne
+ * GET /CRUD/type/{t_id}     getOne
+ * PUT /CRUD/type/{t_id}     alterOne
+ * DELETE /CRUD/type/{t_id}  deleteOne
+ *
+ * for associated types:
+ * (PUT ignores body and only set association for this one)
+ *
+ * GET /CRUD/type/{t_id}/other              findAllOthers
+ * PUT /CRUD/type/{t_id}/other/{o_id}       setOther (aka type.addOther())
+ * DELETE /CRUD/type/{t_id}/other/{o_id}    unsetOther (aka type.removeOther())
  */
 
 /**

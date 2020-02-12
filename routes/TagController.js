@@ -1,6 +1,6 @@
 let express = require('express');
 let tagController = require('../controller/tagcontroller');
-let crud = require('./crud');
+let crud = require('./BaseCrudControllerFunctions');
 
 let router = express.Router({mergeParams: true});
 

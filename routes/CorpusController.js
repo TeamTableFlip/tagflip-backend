@@ -1,16 +1,8 @@
 let express = require('express');
 let corpusController = require('../controller/corpuscontroller');
-let crud = require('./crud');
+let crud = require('./BaseCrudControllerFunctions');
 
 let router = express.Router({mergeParams: true});
-
-/*
- * GET /CRUD/corpus            findAll
- * POST /CRUD/corpus           createOne
- * GET /CRUD/corpus/{c_id}     getOne
- * PUT /CRUD/corpus/{c_id}     alterOne
- * DELETE /CRUD/corpus/{c_id}  deleteOne
- */
 
 router.get('/', crud.listAll(corpusController));
 

@@ -5,13 +5,13 @@ let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan'); // logging middle ware for express, TODO configure log rotation
 
-let indexRouter = require('./routes/index');
+let indexRouter = require('./routes/IndexController');
 let testRouter = require('./routes/test');
 let corpusRouter = require('./routes/corpuscrud');
-let documentRouter = require('./routes/documentcrud');
+let documentRouter = require('./routes/DocumentController');
 let annotationSetRouter = require('./routes/annotationsetcrud');
 let annotationRouter = require('./routes/annotationcrud');
-let tagRouter = require('./routes/tagcrud');
+let tagRouter = require('./routes/TagController');
 
 let app = express();
 

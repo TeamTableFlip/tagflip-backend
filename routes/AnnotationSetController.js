@@ -1,6 +1,6 @@
 let express = require('express');
 let annotationSetController = require('../controller/annotationsetcontroller');
-let crud = require('./crud');
+let crud = require('./BaseCrudControllerFunctions');
 
 let router = express.Router({mergeParams: true});
 

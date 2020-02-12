@@ -50,13 +50,9 @@ function update(id, item) {
         }
         return new Promise((resolve, reject) => {
             model.update(item, {where: {[id_property_name]: id}}).then((updatesArray) => {
-                if (updatesArray) { //TODO check if rows where actual updated
-                    model.findByPk(id).then((updatedItem) => {
-                        resolve(updatedItem);
-                    }).catch((err) => reject(err));
-                } else {
-                    resolve(null);
-                }
+                model.findByPk(id).then((updatedItem) => {
+                    resolve(updatedItem);
+                }).catch((err) => reject(err));
             }).catch((err) => reject(err))
         })
     };
