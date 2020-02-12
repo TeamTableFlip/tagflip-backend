@@ -108,7 +108,7 @@ function deleteOne(controller, property_name) {
             if (deleted) {
                 res.sendStatus(200);
             } else {
-                res.sendStatus(500); // TODO better responses....
+                res.sendStatus(404); // TODO better responses....
             }
         }).catch((err)=>{
             console.error(err);
@@ -127,8 +127,11 @@ function deleteOne(controller, property_name) {
  */
 function setOther(func, property_name, other_property_name) {
     return (req, res, next) => {
-        func(req.params[property_name], req.params[other_property_name]).then(newItem => {
-            res.status(200).send(newItem);
+        func(req.params[property_name], req.params[other_property_name]).then(created => {
+            if (created)
+                res.sendStatus(200);
+            else
+                res.sendStatus(404);
         }).catch((err)=>{
             console.error(err);
             res.sendStatus(500);
@@ -150,7 +153,7 @@ function unsetOther(func, property_name, other_property_name ) {
             if (deleted) {
                 res.sendStatus(200);
             } else {
-                res.sendStatus(500); // TODO better responses....
+                res.sendStatus(404);
             }
         }).catch((err)=>{
             console.error(err);

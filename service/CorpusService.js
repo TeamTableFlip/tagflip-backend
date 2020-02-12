@@ -88,15 +88,15 @@ async function addDocument(c_id, d_id) {
 async function addAnnotationset(c_id, s_id) {
     let corp = await corpusModel.findByPk(c_id);
     let set = await annotationsetModel.findByPk(s_id);
-    await corp.addAnnotationset(set);
-    return true;
+    let ret = await corp.addAnnotationset(set); // ret is a object if created, undefined if not created
+    return (ret !== undefined);
 }
 
 async function removeAnnotationset(c_id, s_id) {
     let corp = await corpusModel.findByPk(c_id);
     let set = await annotationsetModel.findByPk(s_id);
-    await corp.removeAnnotationset(set);
-    return true;
+    let ret = await corp.removeAnnotationset(set); // here its just a boolean...
+    return (ret === 1);
 }
 
 async function getAnnotationsets(c_id) {
