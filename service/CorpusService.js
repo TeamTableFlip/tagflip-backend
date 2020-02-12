@@ -2,7 +2,7 @@ let {corpusModel, annotationsetModel, documentModel, connection} = require('../p
 let BaseCrudServiceFunctions = require('./BaseCrudServiceFunctions');
 
 async function listAll() {
-    return corpusModel.findAll({
+    return await corpusModel.findAll({
         attributes: [
             'c_id',
             'name',
@@ -23,7 +23,7 @@ async function listAll() {
 }
 
 async function get(id) {
-    return corpusModel.findByPk(id, {
+    return await corpusModel.findByPk(id, {
         attributes: [
             'c_id',
             'name',
@@ -46,16 +46,18 @@ async function get(id) {
 function create(item) {
     let findOrCreateOptions = {
         where: {
-            description: item.description,
             name: item.name
+        },
+        defaults:  {
+            description: item.description
         }
     };
     let optionsValidator = (findOptions)=> new Promise((resolve, reject) => {
         let valid = true;
         let failReasons = [];
-        if (findOptions.where.description === undefined || findOptions.where.description === null ||
-            (typeof findOptions.where.description !== "string")) {
-            findOptions.where.description = null;
+        if (findOptions.defaults.description === undefined || findOptions.defaults.description === null ||
+            (typeof findOptions.defaults.description !== "string")) {
+            findOptions.defaults.description = null;
         }
         if (findOptions.where.name === undefined || findOptions.where.name === null ||
             (typeof findOptions.where.name !== "string")) {
