@@ -20,17 +20,9 @@ const connection= new Sequelize(config.db.name, config.db.user, config.db.passwo
 });
 
 /* test connection: */
-connection.authenticate()
-    .then(() => {
-        console.info('Connection has been established successfully.');
-        connection.sync({
-            //force: true /* recreates db on startup */
-        })
-            .then(() => {
-                console.log('Database synchronized')
-            });
-    });
-
+connection.authenticate().then(() => {
+    console.info('Connection has been established successfully.');
+});
 
 /* make models with connection available: */
 let {annotation} = require('./annotation');
@@ -115,6 +107,11 @@ documentModel.hasMany(tagModel,  {
     foreignKey: 'd_id'
 });
 
+connection.sync({
+    //force: true /* recreates db on startup */
+}).then(() => {
+    console.log('Database synchronized')
+});
 
 module.exports = {
     connection,

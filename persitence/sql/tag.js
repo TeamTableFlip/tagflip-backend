@@ -23,7 +23,7 @@ let tag = (connection) => {
         },
         end_index: {
             type:  DataTypes.INTEGER({length: 11}),
-            allowNull: true
+            allowNull: false
         }
     }, {
         timestamps: false,

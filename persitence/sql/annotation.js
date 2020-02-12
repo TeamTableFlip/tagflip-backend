@@ -19,7 +19,8 @@ let annotation = (connection) => {
             unique: 'set_name_unique'
         },
         color: {
-            type: DataTypes.CHAR(7)
+            type: DataTypes.CHAR(7),
+            allowNull: false
         }
     }, {
         timestamps: false,
