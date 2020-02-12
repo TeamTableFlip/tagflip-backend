@@ -55,9 +55,22 @@ function update(id, item) {
         }
         return new Promise((resolve, reject) => {
             model.update(item, {where: {[id_property_name]: id}}).then((updatesArray) => {
+                let updated = false;
+                if (updatesArray && updatesArray[0] === 1)
+                    updated = true;
                 model.findByPk(id).then((updatedItem) => {
-                    resolve(updatedItem);
-                }).catch((err) => {reject(err)});
+                    if (updatedItem === null && updated) {
+                        reject(Error("apparently something got updated and its id changed, this should not happen!"));
+                    }
+                    resolve(updatedItem);  // covers the following cases:
+                    /*
+                        if (updatedItem === null && !updated) // return 404 not found => ret null
+                        if (updatedItem !== null && !updated) // found but not updated => ret current(old) item
+                        if (updatedItem !== null && updated) // found and updated => ret current(new) item
+                    }*/
+                }).catch((err) => {
+                    reject(err);
+                });
             }).catch((err) => {reject(err)});
         })
     };
