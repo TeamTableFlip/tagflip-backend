@@ -2,7 +2,7 @@ let {corpusModel, annotationsetModel, documentModel, connection} = require('../p
 let BaseCrudServiceFunctions = require('./BaseCrudServiceFunctions');
 
 async function listAll() {
-    return await corpusModel.findAll({
+    return corpusModel.findAll({
         attributes: [
             'c_id',
             'name',
@@ -23,7 +23,7 @@ async function listAll() {
 }
 
 async function get(id) {
-    return await corpusModel.findByPk(id, {
+    return corpusModel.findByPk(id, {
         attributes: [
             'c_id',
             'name',
