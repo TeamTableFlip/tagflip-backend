@@ -10,13 +10,29 @@ function get(id) {
 }
 
 function create(item) {
+    let optionsValidator = (findOptions)=> new Promise((resolve, reject) => {
+        let valid = true;
+        let failReasons = [];
+        if (findOptions.where.name === undefined || findOptions.where.name === null ||
+            (typeof findOptions.where.name !== "string")) {
+            valid = false;
+            failReasons.push("specified name incorrect, name is " + String(findOptions.where.name));
+        }
+        if (findOptions.where.description === undefined || findOptions.where.description === null ||
+            (typeof findOptions.where.description !== "string")) {
+            findOptions.where.description = null;
+        }
+        if (valid) resolve();
+        else reject(Error(failReasons.join(" ; ")));
+    });
+
     let findOrCreateOptions = {
         where: {
             description: item.description,
             name: item.name
         }
     };
-    return BaseCrudServiceFunctions.create(item)(annotationsetModel, findOrCreateOptions);
+    return BaseCrudServiceFunctions.create(item)(annotationsetModel, findOrCreateOptions, optionsValidator);
 }
 
 function del(id) {

@@ -16,7 +16,22 @@ function create(item) {
             name: item.name
         }
     };
-    return BaseCrudServiceFunctions.create(item)(corpusModel, findOrCreateOptions);
+    let optionsValidator = (findOptions)=> new Promise((resolve, reject) => {
+        let valid = true;
+        let failReasons = [];
+        if (findOptions.where.description === undefined || findOptions.where.description === null ||
+            (typeof findOptions.where.description !== "string")) {
+            findOptions.where.description = null;
+        }
+        if (findOptions.where.name === undefined || findOptions.where.name === null ||
+            (typeof findOptions.where.name !== "string")) {
+            valid = false;
+            failReasons.push("specified name incorrect, name is " + String(findOptions.where.name));
+        }
+        if (valid) resolve();
+        else reject(Error(failReasons.join(" ; ")));
+    });
+    return BaseCrudServiceFunctions.create(item)(corpusModel, findOrCreateOptions, optionsValidator);
 }
 
 function del(id) {

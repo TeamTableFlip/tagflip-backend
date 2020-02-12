@@ -1,9 +1,10 @@
+
 function listAll() {
     return model => {
         return new Promise((resolve, reject) => {
             model.findAll().then((instance) => {
                 resolve(instance);
-            }).catch((err) => reject(err))
+            }).catch((err) => {reject(err)});
         })
     };
 }
@@ -13,19 +14,23 @@ function get(id) {
         return new Promise((resolve, reject) => {
             model.findByPk(id).then((instance) => {
                 resolve(instance);
-            }).catch((err) => reject(err))
+            }).catch((err) => {reject(err)});
         })
     };
 }
 
 function create(item) {
-    return (model, findOrCreateOptions) => {
+    return (model, findOrCreateOptions, // validator is necessary because sequalize does not convert undefined to null.
+                optionsValidator = (findOrCreateOptions) => new Promise((resolve, reject) => {resolve()})
+            ) => {
         if (item.id)
             item.id = undefined;
         return new Promise((resolve, reject) => {
-            model.findOrCreate(findOrCreateOptions).then((instance, created) => {
-                resolve(instance);
-            }).catch((err) => reject(err))
+            optionsValidator(findOrCreateOptions).then(()=> {
+                model.findOrCreate(findOrCreateOptions).then((instance, created) => {
+                    resolve(instance);
+                }).catch((err) => {reject(err)});
+            }).catch((err)=> {reject(err)});
         })
     }
 }
@@ -35,7 +40,7 @@ function del(id) {
         return new Promise((resolve, reject) => {
             model.destroy({where: {[id_property_name]: id}}).then(() => {
                 resolve(id);
-            }).catch((err) => reject(err))
+            }).catch((err) => {reject(err)});
         })
     };
 }
@@ -52,8 +57,8 @@ function update(id, item) {
             model.update(item, {where: {[id_property_name]: id}}).then((updatesArray) => {
                 model.findByPk(id).then((updatedItem) => {
                     resolve(updatedItem);
-                }).catch((err) => reject(err));
-            }).catch((err) => reject(err))
+                }).catch((err) => {reject(err)});
+            }).catch((err) => {reject(err)});
         })
     };
 }

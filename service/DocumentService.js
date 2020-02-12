@@ -25,6 +25,16 @@ async function create(item) {   // TODO make this a atomic transaction!
         item.id = undefined;
     if (!item.text)
         throw Error("no text specified");
+
+    let valid = true;
+    let failReasons = [];
+    if (item.filename === undefined || item.filename === null ||
+        (typeof item.filename !== "string")) {
+        valid = false;
+        failReasons.push("specified filename missing, filename is " + String(item.filename));
+    }
+    if (!valid) throw Error(failReasons.join("; "));
+
     let hash = hashing.sha256Hash(item.text);
     let ts = Date.now();
     let cor = await corpusModel.findByPk(item.c_id);

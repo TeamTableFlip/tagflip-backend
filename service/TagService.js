@@ -18,7 +18,23 @@ function create(item) {
             end_index: item.end_index,
         }
     };
-    return BaseCrudServiceFunctions.create(item)(tagModel, findOrCreateOptions);
+
+    let optionsValidator = (findOptions)=> new Promise((resolve, reject) => {
+        let valid = true;
+        let failReasons = [];
+        if (findOptions.where.start_index === undefined || findOptions.where.start_index === null ) {
+            valid = false;
+            failReasons.push("specified start_index missing, start_index is " + String(findOptions.where.start_index));
+        }
+        if (findOptions.where.end_index === undefined || findOptions.where.end_index === null ) {
+            valid = false;
+            failReasons.push("specified end_index missing, end_index is " + String(findOptions.where.end_index));
+        }
+        if (valid) resolve();
+        else reject(Error(failReasons.join(" ; ")));
+    });
+
+    return BaseCrudServiceFunctions.create(item)(tagModel, findOrCreateOptions, optionsValidator);
 }
 
 function del(id) {
