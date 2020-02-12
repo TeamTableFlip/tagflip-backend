@@ -1,12 +1,46 @@
-let {corpusModel, annotationsetModel, documentModel} = require('../persitence/sql/Models');
+let {corpusModel, annotationsetModel, documentModel, connection} = require('../persitence/sql/Models');
 let BaseCrudServiceFunctions = require('./BaseCrudServiceFunctions');
 
-function listAll() {
-    return BaseCrudServiceFunctions.listAll()(corpusModel);
+async function listAll() {
+    return await corpusModel.findAll({
+        attributes: [
+            'c_id',
+            'name',
+            'description',
+            [
+                connection.fn('count', connection.col('documents.d_id')), 'num_documents'
+            ]
+        ],
+        include: [
+            {
+                model: documentModel,
+                as: 'documents',
+                attributes: []
+            }
+        ],
+        group: ['corpus.c_id']
+    });
 }
 
-function get(id) {
-    return BaseCrudServiceFunctions.get(id)(corpusModel);
+async function get(id) {
+    return await corpusModel.findByPk(id, {
+        attributes: [
+            'c_id',
+            'name',
+            'description',
+            [
+                connection.fn('count', connection.col('documents.d_id')), 'num_documents'
+            ]
+        ],
+        include: [
+            {
+                model: documentModel,
+                as: 'documents',
+                attributes: []
+            }
+        ],
+        group: ['corpus.c_id']
+    });
 }
 
 function create(item) {
@@ -73,6 +107,14 @@ async function getDocuments(c_id) {
     return corp.getDocuments();
 }
 
+async function getDocumentCount(c_id) {
+    return await documentModel.count({
+        where: {
+            c_id: c_id
+        }
+    })
+}
+
 
 module.exports = {
     listAll: listAll,
@@ -84,5 +126,6 @@ module.exports = {
     addAnnotationset,
     removeAnnotationset,
     getDocuments,
-    getAnnotationsets
+    getAnnotationsets,
+    getDocumentCount
 };

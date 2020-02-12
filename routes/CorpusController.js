@@ -25,4 +25,6 @@ router.get('/:c_id/document',  crud.listOther(CorpusService.getDocuments, 'c_id'
 
 router.put('/:c_id/document/:d_id',  crud.setOther(CorpusService.addDocument, 'c_id', 'd_id'));
 
+router.get('/:c_id/document/count', crud.getOne(CorpusService.getDocumentCount, 'c_id'));
+
 module.exports = router;
