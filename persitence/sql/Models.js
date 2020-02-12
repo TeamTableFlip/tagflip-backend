@@ -6,7 +6,7 @@
  */
 
 const {Sequelize: Models} = require('sequelize');
-const config = require('../../config/config');
+const config = require('../../config/Config');
 /* create connection: */
 const connection= new Models(config.db.name, config.db.user, config.db.password, {
     host: config.db.host,

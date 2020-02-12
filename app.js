@@ -1,5 +1,5 @@
 
-let config = require('./config/config'); // process.env["NODE_CONFIG_DIR"] = __dirname + "/configDir/"; to override location from default ./config
+let config = require('./config/Config'); // process.env["NODE_CONFIG_DIR"] = __dirname + "/configDir/"; to override location from default ./config
 let express = require('express');
 let path = require('path');
 let cors = require('cors');

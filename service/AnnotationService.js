@@ -1,4 +1,4 @@
-let {annotationModel} = require('../persitence/sql/models');
+let {annotationModel} = require('../persitence/sql/Models');
 let BaseCrudServiceFunctions = require('./BaseCrudServiceFunctions');
 
 function listAll() {

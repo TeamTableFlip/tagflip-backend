@@ -1,5 +1,5 @@
 let BaseCrudServiceFunctions = require('./BaseCrudServiceFunctions');
-let {annotationsetModel, corpusModel} = require('../persitence/sql/models');
+let {annotationsetModel, corpusModel} = require('../persitence/sql/Models');
 
 function listAll() {
     return BaseCrudServiceFunctions.listAll()(annotationsetModel);

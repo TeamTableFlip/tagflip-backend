@@ -1,6 +1,6 @@
-let {documentModel, corpusModel} = require('../persitence/sql/models');
-let hashing = require('../persitence/hashing');
-let fileManager = require('../persitence/filesystem/filemanager');
+let {documentModel, corpusModel} = require('../persitence/sql/Models');
+let hashing = require('../persitence/Hashing');
+let fileManager = require('../persitence/filesystem/FileManager');
 
 // TODO define error types for better returns in rest api.
 

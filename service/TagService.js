@@ -1,4 +1,4 @@
-let {tagModel} = require('../persitence/sql/models');
+let {tagModel} = require('../persitence/sql/Models');
 let BaseCrudServiceFunctions = require('./BaseCrudServiceFunctions');
 
 function listAll() {
