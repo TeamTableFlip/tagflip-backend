@@ -1,4 +1,4 @@
-let {annotationModel} = require('../persitence/sql/sequelize');
+let {annotationModel} = require('../persitence/sql/models');
 let baseController = require('./basecontroller');
 
 function listAll() {

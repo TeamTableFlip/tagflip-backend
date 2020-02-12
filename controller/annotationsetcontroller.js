@@ -1,5 +1,5 @@
 let baseController = require('./basecontroller');
-let {annotationsetModel, corpusModel} = require('../persitence/sql/sequelize');
+let {annotationsetModel, corpusModel} = require('../persitence/sql/models');
 
 function listAll() {
     return baseController.listAll()(annotationsetModel);

@@ -5,10 +5,10 @@
  * Created by Max Kuhmichel at 6.2.2020
  */
 
-const {Sequelize} = require('sequelize');
+const {Sequelize: Models} = require('sequelize');
 const config = require('../../config/config');
 /* create connection: */
-const connection= new Sequelize(config.db.name, config.db.user, config.db.password, {
+const connection= new Models(config.db.name, config.db.user, config.db.password, {
     host: config.db.host,
     dialect: config.db.dialect
     // pool: {

@@ -1,4 +1,4 @@
-let {corpusModel, annotationsetModel, documentModel} = require('../persitence/sql/sequelize');
+let {corpusModel, annotationsetModel, documentModel} = require('../persitence/sql/models');
 let baseController = require('./basecontroller');
 
 function listAll() {

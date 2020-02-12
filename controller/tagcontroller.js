@@ -1,4 +1,4 @@
-let {tagModel} = require('../persitence/sql/sequelize');
+let {tagModel} = require('../persitence/sql/models');
 let baseController = require('./basecontroller');
 
 function listAll() {

@@ -1,4 +1,4 @@
-let {documentModel, corpusModel} = require('../persitence/sql/sequelize');
+let {documentModel, corpusModel} = require('../persitence/sql/models');
 let hashing = require('../persitence/hashing');
 let fileManager = require('../persitence/filesystem/filemanager');
 
