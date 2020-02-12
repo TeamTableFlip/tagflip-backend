@@ -1,12 +1,12 @@
 let {annotationModel} = require('../persitence/sql/models');
-let baseController = require('./basecontroller');
+let BaseCrudServiceFunctions = require('./BaseCrudServiceFunctions');
 
 function listAll() {
-    return baseController.listAll()(annotationModel);
+    return BaseCrudServiceFunctions.listAll()(annotationModel);
 }
 
 function get(id) {
-    return baseController.get(id)(annotationModel);
+    return BaseCrudServiceFunctions.get(id)(annotationModel);
 }
 
 function create(item) {
@@ -17,15 +17,15 @@ function create(item) {
             s_id: item.s_id
         }
     };
-    return baseController.create(item)(annotationModel, findOrCreateOptions);
+    return BaseCrudServiceFunctions.create(item)(annotationModel, findOrCreateOptions);
 }
 
 function del(id) {
-    return baseController.del(id)(annotationModel, 'a_id');
+    return BaseCrudServiceFunctions.del(id)(annotationModel, 'a_id');
 }
 
 function update(id, item) {
-    return baseController.update(id, item)(annotationModel, 'a_id');
+    return BaseCrudServiceFunctions.update(id, item)(annotationModel, 'a_id');
 }
 
 

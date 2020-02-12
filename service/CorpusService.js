@@ -1,12 +1,12 @@
 let {corpusModel, annotationsetModel, documentModel} = require('../persitence/sql/models');
-let baseController = require('./basecontroller');
+let BaseCrudServiceFunctions = require('./BaseCrudServiceFunctions');
 
 function listAll() {
-    return baseController.listAll()(corpusModel);
+    return BaseCrudServiceFunctions.listAll()(corpusModel);
 }
 
 function get(id) {
-    return baseController.get(id)(corpusModel);
+    return BaseCrudServiceFunctions.get(id)(corpusModel);
 }
 
 function create(item) {
@@ -16,15 +16,15 @@ function create(item) {
             name: item.name
         }
     };
-    return baseController.create(item)(corpusModel, findOrCreateOptions);
+    return BaseCrudServiceFunctions.create(item)(corpusModel, findOrCreateOptions);
 }
 
 function del(id) {
-    return baseController.del(id)(corpusModel, 'c_id');
+    return BaseCrudServiceFunctions.del(id)(corpusModel, 'c_id');
 }
 
 function update(id, item) {
-    return baseController.update(id, item)(corpusModel, 'c_id');
+    return BaseCrudServiceFunctions.update(id, item)(corpusModel, 'c_id');
 }
 
 async function addDocument(c_id, d_id) {

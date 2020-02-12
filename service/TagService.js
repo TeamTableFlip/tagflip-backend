@@ -1,12 +1,12 @@
 let {tagModel} = require('../persitence/sql/models');
-let baseController = require('./basecontroller');
+let BaseCrudServiceFunctions = require('./BaseCrudServiceFunctions');
 
 function listAll() {
-    return baseController.listAll()(tagModel);
+    return BaseCrudServiceFunctions.listAll()(tagModel);
 }
 
 function get(id) {
-    return baseController.get(id)(tagModel);
+    return BaseCrudServiceFunctions.get(id)(tagModel);
 }
 
 function create(item) {
@@ -18,15 +18,15 @@ function create(item) {
             end_index: item.end_index,
         }
     };
-    return baseController.create(item)(tagModel, findOrCreateOptions);
+    return BaseCrudServiceFunctions.create(item)(tagModel, findOrCreateOptions);
 }
 
 function del(id) {
-    return baseController.del(id)(tagModel, 't_id');
+    return BaseCrudServiceFunctions.del(id)(tagModel, 't_id');
 }
 
 function update(id, item) {
-    return baseController.update(id, item)(tagModel, 't_id');
+    return BaseCrudServiceFunctions.update(id, item)(tagModel, 't_id');
 }
 
 

@@ -6,11 +6,10 @@ let cookieParser = require('cookie-parser');
 let logger = require('morgan'); // logging middle ware for express, TODO configure log rotation
 
 let indexRouter = require('./routes/IndexController');
-let testRouter = require('./routes/test');
-let corpusRouter = require('./routes/corpuscrud');
+let corpusRouter = require('./routes/CorpusController');
 let documentRouter = require('./routes/DocumentController');
-let annotationSetRouter = require('./routes/annotationsetcrud');
-let annotationRouter = require('./routes/annotationcrud');
+let annotationSetRouter = require('./routes/AnnotationSetController');
+let annotationRouter = require('./routes/AnnotationController');
 let tagRouter = require('./routes/TagController');
 
 let app = express();
@@ -27,7 +26,6 @@ app.use('/annotation', annotationRouter);
 app.use('/tag', tagRouter);
 app.use('/annotationset', annotationSetRouter);
 app.use('/document', documentRouter);
-app.use('/test', testRouter);
 
 // error handler
 app.use(function(err, req, res, next) {
