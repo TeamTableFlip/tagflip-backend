@@ -29,7 +29,7 @@ function listAll(controller) {
             res.send(items);
         }).catch((err) => {
             console.error(err);
-            res.status(500);
+            res.sendStatus(500);
         });
     };
 }
@@ -46,7 +46,7 @@ function createOne(controller) {
             res.status(200).send(newItem);
         }).catch((err)=>{
             console.error(err);
-            res.status(500);
+            res.sendStatus(500);
         });
     };
 }
@@ -68,7 +68,7 @@ function getOne(controller, property_name) {
             }
         }).catch((err)=>{
             console.error(err);
-            res.status(500);
+            res.sendStatus(500);
         });
     };
 }
@@ -90,7 +90,7 @@ function updateOne(controller, property_name) {
             }
         }).catch((err)=>{
             console.error(err);
-            res.status(500);
+            res.sendStatus(500);
         });
     };
 }
@@ -112,7 +112,7 @@ function deleteOne(controller, property_name) {
             }
         }).catch((err)=>{
             console.error(err);
-            res.status(500);
+            res.sendStatus(500);
         });
     };
 }
@@ -131,7 +131,7 @@ function setOther(func, property_name, other_property_name) {
             res.status(200).send(newItem);
         }).catch((err)=>{
             console.error(err);
-            res.status(500);
+            res.sendStatus(500);
         });
     };
 }
@@ -154,7 +154,7 @@ function unsetOther(func, property_name, other_property_name ) {
             }
         }).catch((err)=>{
             console.error(err);
-            res.status(500);
+            res.sendStatus(500);
         });
     };
 }
@@ -176,7 +176,7 @@ function listOther(func, property_name ) {
             }
         }).catch((err)=>{
             console.error(err);
-            res.status(500);
+            res.sendStatus(500);
         });
     };
 }
