@@ -1,22 +1,21 @@
-let {document} = require('../persitence/sql/document');
-let {corpus} = require('../persitence/sql/corpus');
-let hashing = require('../persitence/hashing');
-let fileManager = require('../persitence/filesystem/filemanager');
+let {documentModel, corpusModel} = require('../persitence/sql/Models');
+let hashing = require('../persitence/Hashing');
+let fileManager = require('../persitence/filesystem/FileManager');
 
 // TODO define error types for better returns in rest api.
 
 async function listAll() {
-    let documents = await document.findAll();
+    let documents = await documentModel.findAll();
     if (documents) {
         for (let doc of documents) { // TODO error handling when operations fail have way through...
-            doc.dataValues['text'] = await fileManager.readFile(document.filename);
+            doc.dataValues['text'] = await fileManager.readFile(documentModel.filename);
         }
     }
     return documents;
 }
 
 async function get(id) {
-    let doc = await document.findByPk(id);
+    let doc = await documentModel.findByPk(id);
     doc.dataValues['text'] = await fileManager.readFile(doc.filename) // TODO find a better way of adding attributes?
     return doc;
 }
@@ -26,14 +25,24 @@ async function create(item) {   // TODO make this a atomic transaction!
         item.id = undefined;
     if (!item.text)
         throw Error("no text specified");
+
+    let valid = true;
+    let failReasons = [];
+    if (item.filename === undefined || item.filename === null ||
+        (typeof item.filename !== "string")) {
+        valid = false;
+        failReasons.push("specified filename missing, filename is " + String(item.filename));
+    }
+    if (!valid) throw Error(failReasons.join("; "));
+
     let hash = hashing.sha256Hash(item.text);
     let ts = Date.now();
-    let cor = await corpus.findByPk(item.c_id);
+    let cor = await corpusModel.findByPk(item.c_id);
     let corpusDocuments = await cor.getDocuments();
     for (let doc of corpusDocuments) {
         if (doc.document_hash === hash) throw Error("file content already present in this corpus");
     }
-    let [doc, created] = await document.findOrCreate({
+    let [doc, created] = await documentModel.findOrCreate({
         where: {
             c_id: item.c_id,
             filename: item.filename,
@@ -47,8 +56,8 @@ async function create(item) {   // TODO make this a atomic transaction!
 }
 
 async function del(id) {  // TODO make this a atomic transaction!
-    let doc = await document.findByPk(id);
-    await document.destroy({where: {d_id: id}});
+    let doc = await documentModel.findByPk(id);
+    await documentModel.destroy({where: {d_id: id}});
     await fileManager.deleteFile(doc.filename);
     return id;
 }
@@ -61,10 +70,10 @@ async function update(id, item) {   // TODO make this a atomic transaction!
         }
     }
     try {
-        let old_doc = await document.findByPk(id);
-        let updatesArray = await document.update(item, {where: {d_id: id}});
+        let old_doc = await documentModel.findByPk(id);
+        let updatesArray = await documentModel.update(item, {where: {d_id: id}});
         // TODO do something with return value (seems to be very ambiguous)
-        let new_doc = await document.findByPk(id);
+        let new_doc = await documentModel.findByPk(id);
         if (new_doc.filename !== old_doc.filename) await fileManager.moveFile(old_doc.filename, new_doc.filename);
         new_doc.dataValues['text'] = await fileManager.readFile(new_doc.filename);
         return new_doc;
@@ -73,11 +82,16 @@ async function update(id, item) {   // TODO make this a atomic transaction!
     }
 }
 
+async function getTags(d_id) {
+    let doc = await documentModel.findByPk(d_id);
+    return await doc.getTags();
+}
+
 module.exports = {
     listAll: listAll,
     getOne: get,
     updateOne: update,
     deleteOne: del,
     createOne: create,
-
+    getTags
 };

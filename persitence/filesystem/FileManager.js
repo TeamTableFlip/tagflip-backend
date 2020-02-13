@@ -6,7 +6,7 @@
 
 let fs = require('fs');
 let path = require('path');
-let config = require('../../config/config');
+let config = require('../../config/Config');
 
 
 function _checkFileExists(filepath) {

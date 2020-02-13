@@ -1,15 +1,17 @@
 
-let config = require('./config/config'); // process.env["NODE_CONFIG_DIR"] = __dirname + "/configDir/"; to override location from default ./config
+let config = require('./config/Config'); // process.env["NODE_CONFIG_DIR"] = __dirname + "/configDir/"; to override location from default ./config
 let express = require('express');
 let path = require('path');
 let cors = require('cors');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan'); // logging middle ware for express, TODO configure log rotation
 
-let indexRouter = require('./routes/index');
-let testRouter = require('./routes/test');
-let corpusRouter = require('./routes/corpuscrud');
-let documentRouter = require('./routes/documentcrud');
+let indexRouter = require('./routes/IndexController');
+let corpusRouter = require('./routes/CorpusController');
+let documentRouter = require('./routes/DocumentController');
+let annotationSetRouter = require('./routes/AnnotationSetController');
+let annotationRouter = require('./routes/AnnotationController');
+let tagRouter = require('./routes/TagController');
 
 let corsOptions = {
   origin: function (origin, callback) {
@@ -20,11 +22,11 @@ let corsOptions = {
     }
   },
   credentials: true
-}
+};
 
 let app = express();
 
-app.use(cors(corsOptions))
+app.use(cors(corsOptions));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -41,16 +43,19 @@ if(config.delayResponse > 0) {
 
 app.use('/', indexRouter);
 app.use('/corpus', corpusRouter);
+app.use('/annotation', annotationRouter);
+app.use('/tag', tagRouter);
+app.use('/annotationset', annotationSetRouter);
 app.use('/document', documentRouter);
-app.use('/test', testRouter);
 
 // error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
+  console.log(err);
 
-  res.sendStatus(err.status || 500)
+  res.sendStatus(err.status || 500);
 });
 
 module.exports = app;
