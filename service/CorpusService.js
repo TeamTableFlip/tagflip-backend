@@ -108,11 +108,14 @@ async function getDocuments(c_id) {
 }
 
 async function getDocumentCount(c_id) {
-    return await documentModel.count({
+    let count = await documentModel.count({
         where: {
             c_id: c_id
         }
-    })
+    });
+    return {
+        num_documents: count
+    };
 }
 
 
