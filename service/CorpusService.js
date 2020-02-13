@@ -46,16 +46,18 @@ async function get(id) {
 function create(item) {
     let findOrCreateOptions = {
         where: {
-            description: item.description,
             name: item.name
+        },
+        defaults:  {
+            description: item.description
         }
     };
     let optionsValidator = (findOptions)=> new Promise((resolve, reject) => {
         let valid = true;
         let failReasons = [];
-        if (findOptions.where.description === undefined || findOptions.where.description === null ||
-            (typeof findOptions.where.description !== "string")) {
-            findOptions.where.description = null;
+        if (findOptions.defaults.description === undefined || findOptions.defaults.description === null ||
+            (typeof findOptions.defaults.description !== "string")) {
+            findOptions.defaults.description = null;
         }
         if (findOptions.where.name === undefined || findOptions.where.name === null ||
             (typeof findOptions.where.name !== "string")) {
@@ -86,15 +88,15 @@ async function addDocument(c_id, d_id) {
 async function addAnnotationset(c_id, s_id) {
     let corp = await corpusModel.findByPk(c_id);
     let set = await annotationsetModel.findByPk(s_id);
-    await corp.addAnnotationset(set);
-    return true;
+    let ret = await corp.addAnnotationset(set); // ret is a object if created, undefined if not created
+    return (ret !== undefined);
 }
 
 async function removeAnnotationset(c_id, s_id) {
     let corp = await corpusModel.findByPk(c_id);
     let set = await annotationsetModel.findByPk(s_id);
-    await corp.removeAnnotationset(set);
-    return true;
+    let ret = await corp.removeAnnotationset(set); // here its just a boolean...
+    return (ret === 1);
 }
 
 async function getAnnotationsets(c_id) {

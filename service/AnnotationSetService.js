@@ -18,9 +18,9 @@ function create(item) {
             valid = false;
             failReasons.push("specified name incorrect, name is " + String(findOptions.where.name));
         }
-        if (findOptions.where.description === undefined || findOptions.where.description === null ||
-            (typeof findOptions.where.description !== "string")) {
-            findOptions.where.description = null;
+        if (findOptions.defaults.description === undefined || findOptions.defaults.description === null ||
+            (typeof findOptions.defaults.description !== "string")) {
+            findOptions.defaults.description = null;
         }
         if (valid) resolve();
         else reject(Error(failReasons.join(" ; ")));
@@ -28,8 +28,10 @@ function create(item) {
 
     let findOrCreateOptions = {
         where: {
-            description: item.description,
-            name: item.name
+            name: item.name,
+        },
+        defaults:  {
+            description: item.description
         }
     };
     return BaseCrudServiceFunctions.create(item)(annotationsetModel, findOrCreateOptions, optionsValidator);
