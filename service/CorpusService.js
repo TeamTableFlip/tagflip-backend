@@ -1,46 +1,36 @@
 let {corpusModel, annotationsetModel, documentModel, connection} = require('../persitence/sql/Models');
+let FileManager = require('../persitence/filesystem/FileManager');
 let BaseCrudServiceFunctions = require('./BaseCrudServiceFunctions');
+let config = require('../config/Config');
+let zip = require('../persitence/filesystem/Zippper');
+let path = require('path');
+let hashing = require('../persitence/Hashing');
+
+let findQuery = {
+    attributes: [
+        'c_id',
+        'name',
+        'description',
+        [
+            connection.fn('count', connection.col('documents.d_id')), 'num_documents'
+        ]
+    ],
+    include: [
+        {
+            model: documentModel,
+            as: 'documents',
+            attributes: []
+        }
+    ],
+    group: ['corpus.c_id']
+};
 
 async function listAll() {
-    return await corpusModel.findAll({
-        attributes: [
-            'c_id',
-            'name',
-            'description',
-            [
-                connection.fn('count', connection.col('documents.d_id')), 'num_documents'
-            ]
-        ],
-        include: [
-            {
-                model: documentModel,
-                as: 'documents',
-                attributes: []
-            }
-        ],
-        group: ['corpus.c_id']
-    });
+    return corpusModel.findAll(findQuery);
 }
 
 async function get(id) {
-    return await corpusModel.findByPk(id, {
-        attributes: [
-            'c_id',
-            'name',
-            'description',
-            [
-                connection.fn('count', connection.col('documents.d_id')), 'num_documents'
-            ]
-        ],
-        include: [
-            {
-                model: documentModel,
-                as: 'documents',
-                attributes: []
-            }
-        ],
-        group: ['corpus.c_id']
-    });
+    return corpusModel.findByPk(id, findQuery);
 }
 
 function create(item) {
@@ -120,6 +110,63 @@ async function getDocumentCount(c_id) {
     };
 }
 
+async function importZip(c_id, zipLocation, prefix, name) {
+    let corpus = await corpusModel.findByPk(c_id);
+    if (corpus === undefined || corpus === null)
+        return null;
+    let result = await zip.extractZip(zipLocation);
+    let corpusDocuments = await corpus.getDocuments();
+    let docHashSet = new Set();
+    for (let doc of corpusDocuments) {
+        docHashSet.add(doc.document_hash);
+    }
+    let dataBasesEntries = [];
+    let skippedFiles = [];
+    for (let file of result.files) {
+        let targetFileName = null;
+        if (file.startsWith(config.files.unzipBuffer)){
+            if (prefix && prefix.length > 0)
+                targetFileName =  path.join(prefix,name,file.slice(config.files.unzipBuffer.length));
+            else
+                targetFileName =  path.join(name,file.slice(config.files.unzipBuffer.length));
+            await FileManager.moveFile(file,targetFileName, false, true);
+        } else {
+            skippedFiles.push({fileName: file, reason: "file does not have a correct path"});
+            continue;
+        }
+        try {
+            let text = await FileManager.readFile(targetFileName);
+            let hash = hashing.sha256Hash(text);
+            let timestamp = Date.now();
+            if (docHashSet.has(hash)) {
+                skippedFiles.push({fileName: file, reason: "file content is already present in corpus"});
+                continue;
+            }
+            let [doc, created] = await documentModel.findOrCreate({
+                where: {
+                    c_id: c_id,
+                    filename: targetFileName,
+                    document_hash: hash,
+                    last_edited: timestamp
+                }
+            });
+            dataBasesEntries.push({
+                "doc": doc,
+                "created": created
+            })
+        } catch (e) {
+            console.error("caught error, skipping file: ", e);
+            skippedFiles.push({fileName: file, reason: "failed to create database entry"});
+            await FileManager.deleteFile(targetFileName);
+            continue;
+        }
+        console.debug("finished file import for new file: ", targetFileName)
+    } // end for loop
+    return {
+        "dataBasesEntries": dataBasesEntries,
+        "skippedFiles": skippedFiles
+    };
+}
 
 module.exports = {
     listAll: listAll,
@@ -132,5 +179,6 @@ module.exports = {
     removeAnnotationset,
     getDocuments,
     getAnnotationsets,
-    getDocumentCount
+    getDocumentCount,
+    importZip
 };

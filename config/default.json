@@ -16,7 +16,8 @@
     "user": "root"
   },
   "files": {
-    "prefix": "~/tagflip/data"
+    "prefix": "~/tagflip/data",
+    "temp": "~/tagflip/temp",
+    "unzipBuffer": "~/tagflip/temp/unzipBuffer"
   }
-
 }
