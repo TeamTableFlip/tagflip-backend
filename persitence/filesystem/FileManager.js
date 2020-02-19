@@ -4,23 +4,27 @@
  * Created by Max Kuhmichel at 7.2.2020
  */
 
-let fileType = require('file-type');
 let fs = require('fs');
 let path = require('path');
 let config = require('../../config/Config');
 let fileUtils =require('./FileUtils');
-
+let fileType = require('file-type');
 
 async function checkFileType (filePath) {
-    if (await fileUtils.checkFileExists(fileName)) {
-        return await fileType.fromFile('Unicorn.png'); //=> {ext: 'png', mime: 'image/png'}
+    if (await fileUtils.checkFileExists(filePath)) {
+        let r = await fileType.fromFile(filePath);
+        if (r)
+            return r; //=> {ext: 'png', mime: 'image/png'}
+        else // undefined => probably text or some unknown format
+            return  {ext: 'txt', mime: 'plain/text'};
     }else {
         throw Error("file not found");
     }
 }
 
-async function readFile(fileName) {
-    fileName = path.join(config.files.prefix, fileName);
+async function readFile(fileName, external = false) {
+    if (!external)
+        fileName = path.join(config.files.prefix, fileName);
     console.info("reading file: " + fileName);
     if (await fileUtils.checkFileExists(fileName)) {
         return (await fileUtils.readFileData(fileName)).toString();

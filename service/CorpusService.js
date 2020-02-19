@@ -132,23 +132,29 @@ async function importZip(c_id, zipLocation, prefix, name) {
             else
                 targetFileName =  path.join(name,file.slice(config.files.unzipBuffer.length));
             let type = await FileManager.checkFileType(file);
-            if (type.ext !== 'txt') {
-                skippedFiles.push({fileName: file, reason: "file is not a plain text file"});
+            if (!(type.ext === 'txt' || type.ext === 'ics' || type.ext === 'xml')) {
+                skippedFiles.push({fileName: targetFileName, reason: "file is not a plain text file"});
                 continue;
             }
-            await FileManager.moveFile(file,targetFileName, false, true);
         } else {
-            skippedFiles.push({fileName: file, reason: "file does not have a correct path"}); // should never happen
+            skippedFiles.push({fileName: targetFileName, reason: "file does not have a correct path"}); // should never happen
             continue;
         }
         try {
-            let text = await FileManager.readFile(targetFileName);
+            let text = await FileManager.readFile(file, true);
             let hash = hashing.sha256Hash(text);
-            let timestamp = Date.now();
             if (docHashSet.has(hash)) {
-                skippedFiles.push({fileName: file, reason: "file content is already present in corpus"});
+                skippedFiles.push({fileName: targetFileName, reason: "file content is already present in corpus"});
                 continue;
             }
+            try {
+                await FileManager.moveFile(file,targetFileName, false, true);
+            } catch (e) {
+                console.error(e);
+                skippedFiles.push({fileName: targetFileName, reason: "failed to move document into storage, reason: " + e.message});
+                continue;
+            }
+            let timestamp = Date.now();
             let [doc, created] = await documentModel.findOrCreate({
                 where: {
                     c_id: c_id,
@@ -163,7 +169,7 @@ async function importZip(c_id, zipLocation, prefix, name) {
             })
         } catch (e) {
             console.error("caught error, skipping file: ", e);
-            skippedFiles.push({fileName: file, reason: "failed to create database entry"});
+            skippedFiles.push({fileName: targetFileName, reason: "failed to create database entry"});
             await FileManager.deleteFile(targetFileName);
             continue;
         }
@@ -174,6 +180,17 @@ async function importZip(c_id, zipLocation, prefix, name) {
         "skippedFiles": skippedFiles
     };
 }
+
+
+async function exportJson() {
+
+}
+
+
+async function exportZip(format) {
+
+}
+
 
 module.exports = {
     listAll: listAll,
