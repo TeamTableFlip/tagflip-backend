@@ -4,11 +4,20 @@
  * Created by Max Kuhmichel at 7.2.2020
  */
 
+let fileType = require('file-type');
 let fs = require('fs');
 let path = require('path');
 let config = require('../../config/Config');
 let fileUtils =require('./FileUtils');
 
+
+async function checkFileType (filePath) {
+    if (await fileUtils.checkFileExists(fileName)) {
+        return await fileType.fromFile('Unicorn.png'); //=> {ext: 'png', mime: 'image/png'}
+    }else {
+        throw Error("file not found");
+    }
+}
 
 async function readFile(fileName) {
     fileName = path.join(config.files.prefix, fileName);
@@ -59,5 +68,6 @@ module.exports = {
     readFile,
     saveFile,
     deleteFile,
-    moveFile
+    moveFile,
+    checkFileType
 };

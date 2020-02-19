@@ -5,6 +5,8 @@ let config = require('../config/Config');
 let zip = require('../persitence/filesystem/Zippper');
 let path = require('path');
 let hashing = require('../persitence/Hashing');
+let fileType = require('file-type');
+
 
 let findQuery = {
     attributes: [
@@ -129,9 +131,14 @@ async function importZip(c_id, zipLocation, prefix, name) {
                 targetFileName =  path.join(prefix,name,file.slice(config.files.unzipBuffer.length));
             else
                 targetFileName =  path.join(name,file.slice(config.files.unzipBuffer.length));
+            let type = await FileManager.checkFileType(file);
+            if (type.ext !== 'txt') {
+                skippedFiles.push({fileName: file, reason: "file is not a plain text file"});
+                continue;
+            }
             await FileManager.moveFile(file,targetFileName, false, true);
         } else {
-            skippedFiles.push({fileName: file, reason: "file does not have a correct path"});
+            skippedFiles.push({fileName: file, reason: "file does not have a correct path"}); // should never happen
             continue;
         }
         try {
