@@ -11,7 +11,7 @@ router.post('/', crud.createOne(AnnotationService));
 
 router.get('/:a_id', crud.getOne(AnnotationService, 'a_id'));
 
-router.put('/a_id', crud.updateOne(AnnotationService, 'a_id'));
+router.put('/:a_id', crud.updateOne(AnnotationService, 'a_id'));
 
 router.delete('/:a_id', crud.deleteOne(AnnotationService, 'a_id'));
 
