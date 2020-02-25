@@ -4,7 +4,6 @@ let express = require('express');
 let path = require('path');
 let cors = require('cors');
 let cookieParser = require('cookie-parser');
-let fileUpload = require('express-fileupload');
 let logger = require('morgan'); // logging middle ware for express, TODO configure log rotation
 
 let indexRouter = require('./routes/IndexController');
@@ -29,12 +28,6 @@ let app = express();
 
 app.use(cors(corsOptions));
 app.use(logger('dev'));
-app.use(fileUpload({
-  createParentPath: true,
-  debug: true,
-  useTempFiles : true,
-  tempFileDir : config.files.temp
-}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());

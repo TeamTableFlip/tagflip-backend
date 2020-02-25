@@ -1,6 +1,8 @@
 let express = require('express');
 let CorpusService = require('../service/CorpusService');
 let crud = require('./BaseCrudControllerFunctions');
+let fileUpload = require('express-fileupload');
+let config = require('../config/Config');
 
 let router = express.Router({mergeParams: true});
 
@@ -29,6 +31,11 @@ router.get('/:c_id/document/count', crud.listOther(CorpusService.getDocumentCoun
 
 /* import and export of entire corpora */
 
-router.post('/:c_id/import', crud.importWrapper(CorpusService.importFiles, 'c_id'));
+router.post('/:c_id/import', fileUpload({
+    createParentPath: true,
+    debug: true,
+    useTempFiles : true,
+    tempFileDir : config.files.temp
+}), crud.importWrapper(CorpusService.importFiles, 'c_id'));
 
 module.exports = router;
