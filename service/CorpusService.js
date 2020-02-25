@@ -132,14 +132,20 @@ async function importFiles(c_id, uploadedFiles, prefix) {
             let text = await FileManager.readFile(filePath, true);
             let hash = hashing.sha256Hash(text);
             if (docHashSet.has(hash)) {
-                skippedFiles.push({fileName: targetFileName, reason: "file content is already present in corpus"});
+                skippedFiles.push({
+                    item: {
+                        filename: targetFileName
+                    }, reason: "file content is already present in corpus"});
                 return;
             }
             try {
                 await FileManager.moveFile(filePath,targetFileName, false, true);
             } catch (e) {
                 console.error(e);
-                skippedFiles.push({fileName: targetFileName, reason: "failed to move document into storage, reason: " + e.message});
+                skippedFiles.push({
+                    item: {
+                        filename: targetFileName
+                    }, reason: "failed to move document into storage, reason: " + e.message});
                 return;
             }
             let timestamp = Date.now();
@@ -151,13 +157,13 @@ async function importFiles(c_id, uploadedFiles, prefix) {
                     last_edited: timestamp
                 }
             });
-            dataBasesEntries.push({
-                "doc": doc,
-                "created": created
-            });
+            dataBasesEntries.push(doc);
         } catch (e) {
             console.error("caught error, skipping file: ", e);
-            skippedFiles.push({fileName: targetFileName, reason: "failed to create database entry"});
+            skippedFiles.push({
+                item: {
+                    filename: targetFileName
+                }, reason: "failed to create database entry"});
             await FileManager.deleteFile(targetFileName);
             return;
         }
@@ -179,11 +185,17 @@ async function importFiles(c_id, uploadedFiles, prefix) {
                         targetFileName =  path.join(c_id.toString(), possibleZipFile.name,file.slice(config.files.unzipBuffer.length));
                     let type = await FileManager.checkFileType(file);
                     if (!(type.ext === 'txt' || type.ext === 'ics' || type.ext === 'xml')) {
-                        skippedFiles.push({fileName: targetFileName, reason: "file is not a plain text file"});
+                        skippedFiles.push({
+                            item: {
+                                filename: targetFileName
+                            }, reason: "file is not a plain text file"});
                         continue;
                     }
                 } else {
-                    skippedFiles.push({fileName: targetFileName, reason: "file does not have a correct path"}); // should never happen
+                    skippedFiles.push({
+                        item: {
+                            filename: targetFileName
+                        }, reason: "file does not have a correct path"}); // should never happen
                     continue;
                 }
                 await _processFile(file, targetFileName);
@@ -196,7 +208,10 @@ async function importFiles(c_id, uploadedFiles, prefix) {
                 targetFileName =  path.join(c_id.toString(), possibleZipFile.name);
             await _processFile(possibleZipFile.tempFilePath, targetFileName)
         } else {
-            skippedFiles.push({fileName: possibleZipFile.name, reason: "unsupported file type. Allowed: application/zip or plain/text"}); // should never happen
+            skippedFiles.push({
+                item: {
+                    filename: possibleZipFile.name
+                },reason: "unsupported file type. Allowed: application/zip or plain/text"}); // should never happen
             return;
         }
     };
@@ -212,8 +227,8 @@ async function importFiles(c_id, uploadedFiles, prefix) {
     }
 
     return {
-        "dataBasesEntries": dataBasesEntries,
-        "skippedFiles": skippedFiles
+        "items": dataBasesEntries,
+        "skippedItems": skippedFiles
     };
 }
 
