@@ -6,7 +6,7 @@ let zip = require('../persitence/filesystem/Zippper');
 let path = require('path');
 let hashing = require('../persitence/Hashing');
 let fileType = require('file-type');
-
+let {UserError, SystemError, NotFoundError} = require('./Exceptions');
 
 let findQuery = {
     attributes: [
@@ -56,8 +56,8 @@ function create(item) {
             valid = false;
             failReasons.push("specified name incorrect, name is " + String(findOptions.where.name));
         }
-        if (valid) resolve();
-        else reject(Error(failReasons.join(" ; ")));
+        if (valid) resolve(valid);
+        else reject(new Error(failReasons.join(" ; ")));
     });
     return BaseCrudServiceFunctions.create(item)(corpusModel, findOrCreateOptions, optionsValidator);
 }
@@ -112,47 +112,35 @@ async function getDocumentCount(c_id) {
     };
 }
 
-async function importZip(c_id, zipLocation, prefix, name) {
+async function importFiles(c_id, uploadedFiles, prefix) {
     let corpus = await corpusModel.findByPk(c_id);
     if (corpus === undefined || corpus === null)
-        return null;
-    let result = await zip.extractZip(zipLocation);
-    let corpusDocuments = await corpus.getDocuments();
+        throw new NotFoundError("corpus with id " + c_id + " not found");
+
     let docHashSet = new Set();
+
+    let corpusDocuments = await corpus.getDocuments();
     for (let doc of corpusDocuments) {
         docHashSet.add(doc.document_hash);
     }
+
     let dataBasesEntries = [];
     let skippedFiles = [];
-    for (let file of result.files) {
-        let targetFileName = null;
-        if (file.startsWith(config.files.unzipBuffer)){
-            if (prefix && prefix.length > 0)
-                targetFileName =  path.join(prefix,name,file.slice(config.files.unzipBuffer.length));
-            else
-                targetFileName =  path.join(name,file.slice(config.files.unzipBuffer.length));
-            let type = await FileManager.checkFileType(file);
-            if (!(type.ext === 'txt' || type.ext === 'ics' || type.ext === 'xml')) {
-                skippedFiles.push({fileName: targetFileName, reason: "file is not a plain text file"});
-                continue;
-            }
-        } else {
-            skippedFiles.push({fileName: targetFileName, reason: "file does not have a correct path"}); // should never happen
-            continue;
-        }
+
+    let _processFile = async (filePath, targetFileName) => {
         try {
-            let text = await FileManager.readFile(file, true);
+            let text = await FileManager.readFile(filePath, true);
             let hash = hashing.sha256Hash(text);
             if (docHashSet.has(hash)) {
                 skippedFiles.push({fileName: targetFileName, reason: "file content is already present in corpus"});
-                continue;
+                return;
             }
             try {
-                await FileManager.moveFile(file,targetFileName, false, true);
+                await FileManager.moveFile(filePath,targetFileName, false, true);
             } catch (e) {
                 console.error(e);
                 skippedFiles.push({fileName: targetFileName, reason: "failed to move document into storage, reason: " + e.message});
-                continue;
+                return;
             }
             let timestamp = Date.now();
             let [doc, created] = await documentModel.findOrCreate({
@@ -166,15 +154,63 @@ async function importZip(c_id, zipLocation, prefix, name) {
             dataBasesEntries.push({
                 "doc": doc,
                 "created": created
-            })
+            });
         } catch (e) {
             console.error("caught error, skipping file: ", e);
             skippedFiles.push({fileName: targetFileName, reason: "failed to create database entry"});
             await FileManager.deleteFile(targetFileName);
-            continue;
+            return;
         }
-        console.debug("finished file import for new file: ", targetFileName)
-    } // end for loop
+        console.debug("finished file import for new file: ", targetFileName);
+        // return;
+    };
+
+    let _processZipOrFile = async (possibleZipFile) => {
+        // uploadedFiles.name uploadedFiles.tempFilePath uploadedFiles.mimetype
+        // let fileType = await FileManager.checkFileType(possibleZipFile);
+        if (possibleZipFile.mimetype === "application/zip") {
+            let result = await zip.extractZip(possibleZipFile.tempFilePath);
+            for (let file of result.files) { // many files from zip extract
+                let targetFileName = null;
+                if (file.startsWith(config.files.unzipBuffer)){
+                    if (prefix && prefix.length > 0)
+                        targetFileName =  path.join(c_id.toString(), prefix,possibleZipFile.name,file.slice(config.files.unzipBuffer.length));
+                    else
+                        targetFileName =  path.join(c_id.toString(), possibleZipFile.name,file.slice(config.files.unzipBuffer.length));
+                    let type = await FileManager.checkFileType(file);
+                    if (!(type.ext === 'txt' || type.ext === 'ics' || type.ext === 'xml')) {
+                        skippedFiles.push({fileName: targetFileName, reason: "file is not a plain text file"});
+                        continue;
+                    }
+                } else {
+                    skippedFiles.push({fileName: targetFileName, reason: "file does not have a correct path"}); // should never happen
+                    continue;
+                }
+                await _processFile(file, targetFileName);
+            }
+        } else if (possibleZipFile.mimetype === "text/plain") {
+            let targetFileName = null;
+            if (prefix && prefix.length > 0)
+                targetFileName =  path.join(c_id.toString(), prefix,possibleZipFile.name);
+            else
+                targetFileName =  path.join(c_id.toString(), possibleZipFile.name);
+            await _processFile(possibleZipFile.tempFilePath, targetFileName)
+        } else {
+            skippedFiles.push({fileName: possibleZipFile.name, reason: "unsupported file type. Allowed: application/zip or plain/text"}); // should never happen
+            return;
+        }
+    };
+
+    if (Array.isArray(uploadedFiles)) {
+        for (let uploadedFile of uploadedFiles) {
+            console.log(uploadedFile);
+            await _processZipOrFile(uploadedFile);
+        }
+    } else {
+        console.log(uploadedFiles);
+        await _processZipOrFile(uploadedFiles);
+    }
+
     return {
         "dataBasesEntries": dataBasesEntries,
         "skippedFiles": skippedFiles
@@ -204,5 +240,5 @@ module.exports = {
     getDocuments,
     getAnnotationsets,
     getDocumentCount,
-    importZip
+    importFiles
 };

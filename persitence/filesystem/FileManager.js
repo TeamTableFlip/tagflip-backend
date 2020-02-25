@@ -16,7 +16,7 @@ async function checkFileType (filePath) {
         if (r)
             return r; //=> {ext: 'png', mime: 'image/png'}
         else // undefined => probably text or some unknown format
-            return  {ext: 'txt', mime: 'plain/text'};
+            return  {ext: 'txt', mime: 'text/plain'};
     }else {
         throw Error("file not found");
     }

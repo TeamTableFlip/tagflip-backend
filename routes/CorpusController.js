@@ -29,29 +29,6 @@ router.get('/:c_id/document/count', crud.listOther(CorpusService.getDocumentCoun
 
 /* import and export of entire corpora */
 
-
-router.post('/:c_id/import', (req, res, next) => {
-
-    console.log("import");
-    if (!req.files || Object.keys(req.files).length === 0) {
-        return res.status(400).send('No files were uploaded.');
-    }
-
-    let uploadedFile = req.files.file; // file := input form field name
-    let importPrefix = (req.body.prefix && req.body.prefix.length > 0) ? req.body.prefix : "";
-
-
-    CorpusService.importZip(req.params['c_id'], uploadedFile.tempFilePath, importPrefix, uploadedFile.name )
-        .then(r => {
-            if (r)
-                res.status(200).send(r);
-            else
-                res.sendStatus(404);
-        })
-        .catch((err) => {
-            console.error(err);
-            res.sendStatus(500);
-        });
-});
+router.post('/:c_id/import', crud.importWrapper(CorpusService.importFiles, 'c_id'));
 
 module.exports = router;

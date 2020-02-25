@@ -1,3 +1,5 @@
+let {UserError, SystemError, NotFoundError, ConflictError, AuthenticationError} = require('../service/Exceptions');
+
 /**
  * provides basic function wrappers for following functionality:
  *
@@ -18,6 +20,31 @@
  */
 
 /**
+ * checks for custom Exceptions defined in ..//service/Exceptions.js
+ * @param res response object for sending back Http Status Codes
+ * @returns {Function} error handler function
+ * @private
+ */
+function _errorHandler(res) {
+    return (err) => {
+        console.error(err);
+        if (err instanceof UserError)
+            res.sendStatus(400);
+        else if (err instanceof NotFoundError)
+            res.sendStatus(404);
+        else if (err instanceof ConflictError)
+            res.sendStatus(409);
+        else if (err instanceof AuthenticationError)
+            res.sendStatus(401);
+        else if (err instanceof SystemError)
+            res.sendStatus(500);
+        else
+            res.sendStatus(500); // unknown error
+    }
+}
+
+
+/**
  * Calls the listAll() function of the controller and resolves its Promise.
  *
  * @param controller The controller to be used.
@@ -27,10 +54,7 @@ function listAll(controller) {
     return (req, res, next) => {
         controller.listAll().then(items => {
             res.send(items);
-        }).catch((err) => {
-            console.error(err);
-            res.sendStatus(500);
-        });
+        }).catch(_errorHandler(res));
     };
 }
 
@@ -44,10 +68,7 @@ function createOne(controller) {
     return (req, res, next) => {
         controller.createOne(req.body).then(newItem => {
             res.status(200).send(newItem);
-        }).catch((err)=>{
-            console.error(err);
-            res.sendStatus(500);
-        });
+        }).catch(_errorHandler(res));
     };
 }
 
@@ -61,15 +82,12 @@ function createOne(controller) {
 function getOne(controller, property_name) {
     return (req, res, next) => {
         controller.getOne(req.params[property_name]).then(item => {
-            if (item == null) {
+            if (!item) {
                 res.sendStatus(404);
             } else {
                 res.status(200).send(item);
             }
-        }).catch((err)=>{
-            console.error(err);
-            res.sendStatus(500);
-        });
+        }).catch(_errorHandler(res));
     };
 }
 
@@ -83,15 +101,12 @@ function getOne(controller, property_name) {
 function updateOne(controller, property_name) {
     return (req, res, next) => {
         controller.updateOne(req.params[property_name], req.body).then(updatedItem => {
-            if (updatedItem) {
-                res.status(200).send(updatedItem);
-            } else {
+            if (!updatedItem) {
                 res.sendStatus(404);
+            } else {
+                res.status(200).send(updatedItem);
             }
-        }).catch((err)=>{
-            console.error(err);
-            res.sendStatus(500);
-        });
+        }).catch(_errorHandler(res));
     };
 }
 
@@ -105,15 +120,13 @@ function updateOne(controller, property_name) {
 function deleteOne(controller, property_name) {
     return (req, res, next) => {
         controller.deleteOne(req.params[property_name]).then(deleted => {
-            if (deleted) {
+            if (!deleted) {
                 res.sendStatus(200);
             } else {
-                res.sendStatus(404); // TODO better responses....
+                res.sendStatus(200);
+                // res.status(200).send(deleted);
             }
-        }).catch((err)=>{
-            console.error(err);
-            res.sendStatus(500);
-        });
+        }).catch(_errorHandler(res));
     };
 }
 
@@ -128,14 +141,11 @@ function deleteOne(controller, property_name) {
 function setOther(func, property_name, other_property_name) {
     return (req, res, next) => {
         func(req.params[property_name], req.params[other_property_name]).then(created => {
-            if (created)
-                res.sendStatus(200);
-            else
+            if (!created)
                 res.sendStatus(404);
-        }).catch((err)=>{
-            console.error(err);
-            res.sendStatus(500);
-        });
+            else
+                res.sendStatus(200);
+        }).catch(_errorHandler(res));
     };
 }
 
@@ -155,10 +165,7 @@ function unsetOther(func, property_name, other_property_name ) {
             } else {
                 res.sendStatus(404);
             }
-        }).catch((err)=>{
-            console.error(err);
-            res.sendStatus(500);
-        });
+        }).catch(_errorHandler(res));
     };
 }
 
@@ -177,11 +184,34 @@ function listOther(func, property_name ) {
             } else {
                 res.sendStatus(404);
             }
-        }).catch((err)=>{
-            console.error(err);
-            res.sendStatus(500);
-        });
+        }).catch(_errorHandler(res));
     };
+}
+
+/**
+ * warpper for document importing with or without zip (defined by importFunc).
+ *
+ * @param importFunc import function of service.
+ * @param propertyName rest resource id.
+ * @returns {Function} router function for express.js.
+ */
+function importWrapper(importFunc, propertyName) {
+    return(req, res, next) => {
+        if (!req.files || Object.keys(req.files).length === 0) {
+            return res.status(400).send('No files were uploaded.');
+        }
+
+        let importPrefix = (req.body.prefix && req.body.prefix.length > 0) ? req.body.prefix : "";
+        let uploadedFiles = req.files.file; // file := input form field name
+        importFunc(req.params[propertyName], uploadedFiles, importPrefix)
+            .then(r => {
+                if (r)
+                    res.status(200).send(r);
+                else
+                    res.sendStatus(500);
+            })
+            .catch(_errorHandler(res));
+    }
 }
 
 module.exports = {
@@ -192,5 +222,6 @@ module.exports = {
     deleteOne,
     setOther,
     unsetOther,
-    listOther
+    listOther,
+    importWrapper
 };
