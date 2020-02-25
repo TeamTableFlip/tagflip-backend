@@ -168,7 +168,7 @@ async function importFiles(c_id, uploadedFiles, prefix) {
     let _processZipOrFile = async (possibleZipFile) => {
         // uploadedFiles.name uploadedFiles.tempFilePath uploadedFiles.mimetype
         // let fileType = await FileManager.checkFileType(possibleZipFile);
-        if (possibleZipFile.mimetype === "application/zip") {
+        if (possibleZipFile.mimetype === "application/zip" || possibleZipFile.mimetype === "x-zip-compressed" || possibleZipFile.mimetype === "multipart/x-zip") {
             let result = await zip.extractZip(possibleZipFile.tempFilePath);
             for (let file of result.files) { // many files from zip extract
                 let targetFileName = null;
