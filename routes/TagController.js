@@ -13,6 +13,6 @@ router.get('/:t_id', crud.getOne(TagService, 't_id'));
 
 router.put('/:t_id', crud.updateOne(TagService, 't_id'));
 
-router.delete('/t:_id', crud.deleteOne(TagService, 't_id'));
+router.delete('/:t_id', crud.deleteOne(TagService, 't_id'));
 
 module.exports = router;
