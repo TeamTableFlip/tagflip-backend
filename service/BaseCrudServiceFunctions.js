@@ -62,7 +62,7 @@ function update(id, item) {
                     if (updatedItem === null && updated) {
                         reject(Error("apparently something got updated and its id changed, this should not happen!"));
                     }
-                    resolve(updatedItem);  // covers the following cases:
+                    else resolve(updatedItem);  // covers the following cases:
                     /*
                         if (updatedItem === null && !updated) // return 404 not found => ret null
                         if (updatedItem !== null && !updated) // found but not updated => ret current(old) item
