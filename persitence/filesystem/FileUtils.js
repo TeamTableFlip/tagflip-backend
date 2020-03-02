@@ -14,7 +14,7 @@ function _getStats(path) {
     return new Promise((resolve, reject) => {
         fs.lstat(path, (err, stats) => {
             if (err) reject(err);
-            resolve(stats);
+            else resolve(stats);
             // console.log(`Is file: ${stats.isFile()}`);
             // console.log(`Is directory: ${stats.isDirectory()}`);
             // console.log(`Is symbolic link: ${stats.isSymbolicLink()}`);
@@ -30,7 +30,7 @@ function rmDir(path) {
     return new Promise((resolve, reject) => {
         fs.rmdir(path, {recursive: true}, err => {
             if (err) reject(err);
-            resolve(!err);
+            else resolve(!err);
         });
     });
 }
@@ -38,20 +38,30 @@ function rmDir(path) {
 
 function mkdirs(filepath) {
     return new Promise((resolve, reject) => {
-        fs.mkdir(path.dirname(filepath),  {recursive: true }, (err) => {
-            if (err) reject(err)
-            else resolve();
-        });
+        if(fs.existsSync(path.dirname(filepath))) {
+            resolve();
+        }
+        else {
+            fs.mkdir(path.dirname(filepath),  {recursive: true }, (err) => {
+                if (err) reject(err);
+                else resolve();
+            });
+        }
     });
 }
 
 function mkdir(path) {
     return new Promise((resolve, reject) => {
         console.log(path);
-        fs.mkdir(path,  {recursive: true}, (err) => {
-            if (err) reject(err);
-            else resolve();
-        });
+        if(fs.existsSync(path.dirname(path))) {
+            resolve();
+        }
+        else {
+            fs.mkdir(path, {recursive: true}, (err) => {
+                if (err) reject(err);
+                else resolve();
+            });
+        }
     });
 }
 
@@ -60,7 +70,7 @@ function readFileData(filepath) {
     return new Promise((resolve, reject) => {
         fs.readFile(filepath, (err, data) => {
             if (err) reject(err);
-            resolve(data);
+            else resolve(data);
         });
     });
 }
@@ -69,7 +79,7 @@ function saveFileData(filePath, data, encoding = 'utf-8') {
     return new Promise((resolve, reject) => {
         fs.writeFile(filePath, data, encoding,  (err) => {
             if (err) reject(err);
-            resolve(true);
+            else resolve(true);
         });
     });
 }
@@ -78,7 +88,7 @@ function unlinkFile(filePath) {
     return new Promise((resolve, reject) => {
         fs.unlink(filePath,  (err) => {
             if (err) reject(err);
-            resolve(true);
+            else resolve(true);
         });
     });
 }
@@ -91,7 +101,7 @@ function copyFile (source, target, deleteOld = false) {
                 resolve(new Promise((resolve, reject) => {
                     fs.unlink(source,  (err) => { // delete source when done
                         if (err) reject(err);
-                        resolve(true);
+                        else resolve(true);
                     });
                 }));
             else
