@@ -66,12 +66,12 @@ INSERT INTO `corpus_annotationset` (`s_id`, `c_id`) VALUES
 -- Exportiere Daten aus Tabelle tagflip.document: ~6 rows (ungefähr)
 /*!40000 ALTER TABLE `document` DISABLE KEYS */;
 INSERT INTO `document` (`d_id`, `c_id`, `filename`, `document_hash`, `last_edited`) VALUES
-	(1, 1, '/home/jakuk001/Nextcloud/TagFlip/Documents/1/4474635_stripped.txt', 'dd4650d75ea67d687230afedd076f779f803b8cf635b68e98ae457eb36ea3069', '2020-02-06 14:22:28'),
-	(2, 1, '/home/jakuk001/Nextcloud/TagFlip/Documents/1/4486492_stripped.txt', 'f03d8fa6dc737c3430e77e61b8655e636d51a958b49ab902323a1760e997ea84', '2020-02-06 11:32:46'),
-	(3, 1, '/home/jakuk001/Nextcloud/TagFlip/Documents/1/4744446_stripped.txt', '797d2ab6af8f2563c8556f272324eb65ed640174c6407b79a8bffcf739db5ca9', NULL),
-	(4, 2, '/home/jakuk001/Nextcloud/TagFlip/Documents/2/HarryPotter.txt', '34a53115581d1361b6dcdb2bef5b035ff1ffe0468c1e574e2f237787fe83b3d8', '2020-02-05 14:22:34'),
-	(5, 4, '/home/jakuk001/Nextcloud/TagFlip/Documents/4/GoogleGlass.txt', 'e07623440b60f6c3ef449e9670f72ba6dead8e9ede5c0f491e1b61f21b1df951', NULL),
-	(6, 4, '/home/jakuk001/Nextcloud/TagFlip/Documents/4/WhatsApp.txt', '0d0bda2fadb82338a1191d79640e3b2dd0e080aa9c814afdecdfa31f0ac325c3', NULL);
+	(1, 1, '1/4474635_stripped.txt', 'dd4650d75ea67d687230afedd076f779f803b8cf635b68e98ae457eb36ea3069', '2020-02-06 14:22:28'),
+	(2, 1, '1/4486492_stripped.txt', 'f03d8fa6dc737c3430e77e61b8655e636d51a958b49ab902323a1760e997ea84', '2020-02-06 11:32:46'),
+	(3, 1, '1/4744446_stripped.txt', '797d2ab6af8f2563c8556f272324eb65ed640174c6407b79a8bffcf739db5ca9', NULL),
+	(4, 2, '2/HarryPotter.txt', '34a53115581d1361b6dcdb2bef5b035ff1ffe0468c1e574e2f237787fe83b3d8', '2020-02-05 14:22:34'),
+	(5, 4, '4/GoogleGlass.txt', 'e07623440b60f6c3ef449e9670f72ba6dead8e9ede5c0f491e1b61f21b1df951', NULL),
+	(6, 4, '4/WhatsApp.txt', '0d0bda2fadb82338a1191d79640e3b2dd0e080aa9c814afdecdfa31f0ac325c3', NULL);
 /*!40000 ALTER TABLE `document` ENABLE KEYS */;
 
 -- Exportiere Daten aus Tabelle tagflip.tag: ~0 rows (ungefähr)
