@@ -1,6 +1,7 @@
 let {corpusModel, annotationsetModel, documentModel, connection} = require('../persitence/sql/Models');
 let FileManager = require('../persitence/filesystem/FileManager');
 let BaseCrudServiceFunctions = require('./BaseCrudServiceFunctions');
+let DocumentService = require('./DocumentService');
 let config = require('../config/Config');
 let zip = require('../persitence/filesystem/Zippper');
 let path = require('path');
@@ -35,7 +36,7 @@ async function get(id) {
     return corpusModel.findByPk(id, findQuery);
 }
 
-function create(item) {
+async function create(item) {
     let findOrCreateOptions = {
         where: {
             name: item.name
@@ -62,11 +63,17 @@ function create(item) {
     return BaseCrudServiceFunctions.create(item)(corpusModel, findOrCreateOptions, optionsValidator);
 }
 
-function del(id) {
+async function del(id) {
+    let corp = await corpusModel.findByPk(id);
+    let documents = await corp.getDocuments();
+    // get documents and delete them first (including files on disk)
+    for (let doc of documents) {
+        await DocumentService.deleteOne(doc.d_id);
+    }
     return BaseCrudServiceFunctions.del(id)(corpusModel, 'c_id');
 }
 
-function update(id, item) {
+async function update(id, item) {
     return BaseCrudServiceFunctions.update(id, item)(corpusModel, 'c_id');
 }
 

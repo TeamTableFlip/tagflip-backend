@@ -45,43 +45,43 @@ function _errorHandler(res) {
 
 
 /**
- * Calls the listAll() function of the controller and resolves its Promise.
+ * Calls the listAll() function of the service and resolves its Promise.
  *
- * @param controller The controller to be used.
+ * @param service The service to be used.
  * @returns {Function} ExpressJS routing function (req, res, next) => { ... }.
  */
-function listAll(controller) {
+function listAll(service) {
     return (req, res, next) => {
-        controller.listAll().then(items => {
+        service.listAll().then(items => {
             res.send(items);
         }).catch(_errorHandler(res));
     };
 }
 
 /**
- * Calls the createOne(object) function of the controller and resolves its Promise.
+ * Calls the createOne(object) function of the service and resolves its Promise.
  *
- * @param controller The controller to be used.
+ * @param service The service to be used.
  * @returns {Function} ExpressJS routing function (req, res, next) => { ... }.
  */
-function createOne(controller) {
+function createOne(service) {
     return (req, res, next) => {
-        controller.createOne(req.body).then(newItem => {
+        service.createOne(req.body).then(newItem => {
             res.status(200).send(newItem);
         }).catch(_errorHandler(res));
     };
 }
 
 /**
- * Calls the getOne(identifier) function of the controller and resolves its Promise.
+ * Calls the getOne(identifier) function of the service and resolves its Promise.
  *
- * @param controller The controller to be used.
- * @param property_name The property of req.params to be used, as in controller.getOne(property).
+ * @param service The service to be used.
+ * @param property_name The property of req.params to be used, as in service.getOne(property).
  * @returns {Function} ExpressJS routing function (req, res, next) => { ... }.
  */
-function getOne(controller, property_name) {
+function getOne(service, property_name) {
     return (req, res, next) => {
-        controller.getOne(req.params[property_name]).then(item => {
+        service.getOne(req.params[property_name]).then(item => {
             if (!item) {
                 res.sendStatus(404);
             } else {
@@ -92,15 +92,15 @@ function getOne(controller, property_name) {
 }
 
 /**
- * Calls the updateOne(identifier) function of the controller and resolves its Promise.
+ * Calls the updateOne(identifier) function of the service and resolves its Promise.
  *
- * @param controller The controller to be used.
- * @param property_name The property of req.params to be used, as in controller.updateOne(property).
+ * @param service The service to be used.
+ * @param property_name The property of req.params to be used, as in service.updateOne(property).
  * @returns {Function} ExpressJS routing function (req, res, next) => { ... }.
  */
-function updateOne(controller, property_name) {
+function updateOne(service, property_name) {
     return (req, res, next) => {
-        controller.updateOne(req.params[property_name], req.body).then(updatedItem => {
+        service.updateOne(req.params[property_name], req.body).then(updatedItem => {
             if (!updatedItem) {
                 res.sendStatus(404);
             } else {
@@ -111,15 +111,15 @@ function updateOne(controller, property_name) {
 }
 
 /**
- * Calls the deleteOne(identifier) function of the controller and resolves its Promise.
+ * Calls the deleteOne(identifier) function of the service and resolves its Promise.
  *
- * @param controller The controller to be used.
- * @param property_name The property of req.params to be used, as in controller.deleteOne(property).
+ * @param service The service to be used.
+ * @param property_name The property of req.params to be used, as in service.deleteOne(property).
  * @returns {Function} ExpressJS routing function (req, res, next) => { ... }.
  */
-function deleteOne(controller, property_name) {
+function deleteOne(service, property_name) {
     return (req, res, next) => {
-        controller.deleteOne(req.params[property_name]).then(deleted => {
+        service.deleteOne(req.params[property_name]).then(deleted => {
             if (!deleted) {
                 res.sendStatus(200);
             } else {
@@ -131,10 +131,10 @@ function deleteOne(controller, property_name) {
 }
 
 /**
- * Calls add function of the controller for adding reference object and resolves its Promise.
+ * Calls add function of the service for adding reference object and resolves its Promise.
  *
- * @param func The controller-function to be used.
- * @param property_name The property of req.params to be used, as in controller.deleteOne(property).
+ * @param func The service-function to be used.
+ * @param property_name The property of req.params to be used, as in service.deleteOne(property).
  * @param other_property_name associated model instance id.
  * @returns {Function} ExpressJS routing function (req, res, next) => { ... }.
  */
@@ -150,10 +150,10 @@ function setOther(func, property_name, other_property_name) {
 }
 
 /**
- * Calls delete function of the controller for removing reference object and resolves its Promise.
+ * Calls delete function of the service for removing reference object and resolves its Promise.
  *
- * @param func The controller-function to be used.
- * @param property_name The property of req.params to be used, as in controller.deleteOne(property).
+ * @param func The service-function to be used.
+ * @param property_name The property of req.params to be used, as in service.deleteOne(property).
  * @param other_property_name associated model instance id.
  * @returns {Function} ExpressJS routing function (req, res, next) => { ... }.
  */
@@ -170,10 +170,10 @@ function unsetOther(func, property_name, other_property_name ) {
 }
 
 /**
- * Calls getter function of the controller for retrieving reference objects.
+ * Calls getter function of the service for retrieving reference objects.
  *
- * @param func The controller-function to be used.
- * @param property_name The property of req.params to be used, as in controller.deleteOne(property).
+ * @param func The service-function to be used.
+ * @param property_name The property of req.params to be used, as in service.deleteOne(property).
  * @returns {Function} ExpressJS routing function (req, res, next) => { ... }.
  */
 function listOther(func, property_name ) {

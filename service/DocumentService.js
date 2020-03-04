@@ -1,3 +1,4 @@
+let {SystemError} = require('./Exceptions');
 let {documentModel, corpusModel} = require('../persitence/sql/Models');
 let hashing = require('../persitence/Hashing');
 let fileManager = require('../persitence/filesystem/FileManager');
@@ -55,31 +56,39 @@ async function create(item) {   // TODO make this a atomic transaction!
     return doc;
 }
 
-async function del(id) {  // TODO make this a atomic transaction!
+async function del(id) {
     let doc = await documentModel.findByPk(id);
     await documentModel.destroy({where: {d_id: id}});
-    await fileManager.deleteFile(doc.filename);
+    try {
+        await fileManager.deleteFile(doc.filename);
+    } catch (e) {
+        console.error("failed to delete file from disk, reverting database update");
+        await documentModel.create(doc);
+        throw new SystemError("failed to delete file from disk, reverting database update", e);
+    }
     return id;
 }
 
-async function update(id, item) {   // TODO make this a atomic transaction!
+async function update(id, item) {
     if (item.id) {
         if (item.id !== id) {
             console.warn("request for item update has different ids, setting id to url param");
             item.id = id;
         }
     }
+    let old_doc = await documentModel.findByPk(id);
+    let updatesArray = await documentModel.update(item, {where: {d_id: id}});
+    // TODO do something with return value (seems to be somewhat ambiguous)
+    let new_doc = await documentModel.findByPk(id);
     try {
-        let old_doc = await documentModel.findByPk(id);
-        let updatesArray = await documentModel.update(item, {where: {d_id: id}});
-        // TODO do something with return value (seems to be very ambiguous)
-        let new_doc = await documentModel.findByPk(id);
         if (new_doc.filename !== old_doc.filename) await fileManager.moveFile(old_doc.filename, new_doc.filename);
         new_doc.dataValues['text'] = await fileManager.readFile(new_doc.filename);
-        return new_doc;
     } catch (e) {
-        throw e;
+        console.error("failed to move file on disk, reverting database update");
+        await documentModel.update(old_doc, {where: {d_id: id}});
+        throw new SystemError("failed to delete file from disk, reverting database update", e);
     }
+    return new_doc;
 }
 
 async function getTags(d_id) {
