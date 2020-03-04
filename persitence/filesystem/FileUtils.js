@@ -50,10 +50,10 @@ function mkdirs(filepath) {
     });
 }
 
-function mkdir(path) {
+function mkdir(filepath) {
     return new Promise((resolve, reject) => {
-        console.log(path);
-        if(fs.existsSync(path.dirname(path))) {
+        console.log(filepath);
+        if(fs.existsSync(path.dirname(filepath))) {
             resolve();
         }
         else {
