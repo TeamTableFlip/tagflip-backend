@@ -1,3 +1,7 @@
+/**
+ * currently unused. check node version to be above a certain number.
+ * In our case node 12 is required.
+ */
 import semver from 'semver';
 import { engines } from './package';
 
