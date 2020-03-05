@@ -1,14 +1,19 @@
-let {SystemError} = require('./Exceptions');
+/**
+ * because we also have to read text data from filesystem. This class requires more logic than the other services...
+ * All Functions read and write data from and to the database as well as the file storage.
+ * They try and keep them in sync with each other, by rolling back changes in case of errors.
+ *
+ * TODO: create some kind of timed cleanup procedure that runs over night and makes sure everything is as it's supposed to.
+ */
+let {SystemError, UserError} = require('./Exceptions');
 let {documentModel, corpusModel} = require('../persitence/sql/Models');
 let hashing = require('../persitence/Hashing');
 let fileManager = require('../persitence/filesystem/FileManager');
 
-// TODO define error types for better returns in rest api.
-
 async function listAll() {
     let documents = await documentModel.findAll();
     if (documents) {
-        for (let doc of documents) { // TODO error handling when operations fail have way through...
+        for (let doc of documents) {
             doc.dataValues['text'] = await fileManager.readFile(documentModel.filename);
         }
     }
@@ -17,15 +22,15 @@ async function listAll() {
 
 async function get(id) {
     let doc = await documentModel.findByPk(id);
-    doc.dataValues['text'] = await fileManager.readFile(doc.filename) // TODO find a better way of adding attributes?
+    doc.dataValues['text'] = await fileManager.readFile(doc.filename);
     return doc;
 }
 
-async function create(item) {   // TODO make this a atomic transaction!
+async function create(item) {
     if (item.id)
         item.id = undefined;
     if (!item.text)
-        throw Error("no text specified");
+        throw UserError("no text specified");
 
     let valid = true;
     let failReasons = [];
@@ -34,14 +39,14 @@ async function create(item) {   // TODO make this a atomic transaction!
         valid = false;
         failReasons.push("specified filename missing, filename is " + String(item.filename));
     }
-    if (!valid) throw Error(failReasons.join("; "));
+    if (!valid) throw UserError(failReasons.join("; "));
 
     let hash = hashing.sha256Hash(item.text);
     let ts = Date.now();
     let cor = await corpusModel.findByPk(item.c_id);
     let corpusDocuments = await cor.getDocuments();
     for (let doc of corpusDocuments) {
-        if (doc.document_hash === hash) throw Error("file content already present in this corpus");
+        if (doc.document_hash === hash) throw UserError("file content already present in this corpus");
     }
     let [doc, created] = await documentModel.findOrCreate({
         where: {
@@ -51,7 +56,13 @@ async function create(item) {   // TODO make this a atomic transaction!
             last_edited: ts
         }
     });
-    if (item.text) await fileManager.saveFile(doc.filename, !created, item.text);
+    try {
+        if (item.text) await fileManager.saveFile(doc.filename, !created, item.text);
+    } catch (e) { // roll back database creation
+        console.error(e);
+        documentModel.delete(doc.d_id);
+        throw new SystemError("failed to write file content to disk, reverting database update", e);
+    }
     doc.dataValues['text'] = item.text;
     return doc;
 }

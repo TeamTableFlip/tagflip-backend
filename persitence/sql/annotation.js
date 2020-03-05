@@ -1,5 +1,11 @@
 const { DataTypes } = require('sequelize');
 
+/**
+ * Function to create Annotation Model.
+ *
+ * @param connection: sequelize connection object
+ * @returns {Model|void}
+ */
 let annotation = (connection) => {
     return connection.define('annotation', {
         a_id: {

@@ -74,11 +74,23 @@ async function addCorpus(s_id, c_id) {
     return true;
 }
 
+/**
+ * get corpora connected to  annotationset s_id.
+ *
+ * @param s_id
+ * @returns {Promise<*>}
+ */
 async function getCorpora(s_id) {
     let set = await annotationsetModel.findByPk(s_id);
     return await set.getCorpus();
 }
 
+/**
+ * get Annotations connected to annotationset s_id.
+ *
+ * @param s_id
+ * @returns {Promise<*>}
+ */
 async function getAnnotations(s_id) {
     let set = await annotationsetModel.findByPk(s_id);
     return await set.getAnnotations();

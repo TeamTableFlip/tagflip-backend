@@ -1,5 +1,11 @@
 const { DataTypes } = require('sequelize');
 
+/**
+ * Function to create Document Model
+ *
+ * @param connection: sequelize connection object
+ * @returns {Model|void}
+ */
 let document =  (connection) => {
     return connection.define('document', {
         d_id: {

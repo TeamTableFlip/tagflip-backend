@@ -29,8 +29,7 @@ router.put('/:c_id/document/:d_id',  crud.setOther(CorpusService.addDocument, 'c
 
 router.get('/:c_id/document/count', crud.listOther(CorpusService.getDocumentCount, 'c_id'));
 
-/* import and export of entire corpora */
-
+/* import of entire corpora */
 router.post('/:c_id/import', fileUpload({
     createParentPath: true,
     debug: true,

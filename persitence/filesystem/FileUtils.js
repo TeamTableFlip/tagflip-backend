@@ -1,3 +1,8 @@
+/**
+ * Wrapper for node.js fs filesystem operations.
+ *
+ * Created by Max Kuhmichel at 7.2.2020
+ */
 
 let fs = require('fs');
 let path = require('path');
@@ -15,13 +20,6 @@ function _getStats(path) {
         fs.lstat(path, (err, stats) => {
             if (err) reject(err);
             else resolve(stats);
-            // console.log(`Is file: ${stats.isFile()}`);
-            // console.log(`Is directory: ${stats.isDirectory()}`);
-            // console.log(`Is symbolic link: ${stats.isSymbolicLink()}`);
-            // console.log(`Is FIFO: ${stats.isFIFO()}`);
-            // console.log(`Is socket: ${stats.isSocket()}`);
-            // console.log(`Is character device: ${stats.isCharacterDevice()}`);
-            // console.log(`Is block device: ${stats.isBlockDevice()}`);
         });
     });
 }

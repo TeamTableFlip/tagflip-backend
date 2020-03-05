@@ -1,4 +1,16 @@
+/**
+ * Analog to BaseCrudControllerFunctions.
+ * Provides some abstraction for basic crud service operations such as findAll, getOne, etc...
+ * The functions return functions that expect a working sequalize model as the first argument.
+ *
+ * created by Max Kuhmichel.
+ */
 
+/**
+ * listsAll items from model.
+ *
+ * @returns {function(model): Promise<[Object]>}
+ */
 function listAll() {
     return model => {
         return new Promise((resolve, reject) => {
@@ -9,6 +21,12 @@ function listAll() {
     };
 }
 
+/**
+ * returns one item from model.
+ *
+ * @param id primary key of db object.
+ * @returns {function(model): Promise<Object>}
+ */
 function get(id) {
     return model => {
         return new Promise((resolve, reject) => {
@@ -19,6 +37,19 @@ function get(id) {
     };
 }
 
+/**
+ * creates one database instance with data provided by item.
+ *
+ * Arguments of returning function:
+ * First argument = sequalize model
+ * Second argument = search query {id: ..., name: ...}
+ * Third argument = function to check item for correctness
+ *
+ * TODO simplify this with basic find check and create in this order.
+ *
+ * @param item:Object item data
+ * @returns {function(model, *=, *=): Promise<Object>}
+ */
 function create(item) {
     return (model, findOrCreateOptions, // validator is necessary because sequalize does not convert undefined to null.
                 optionsValidator = (findOrCreateOptions) => new Promise((resolve, reject) => {resolve()})
@@ -35,6 +66,12 @@ function create(item) {
     }
 }
 
+/**
+ * deletes item with id from database.
+ * id_property_name corresponds to the table column name of primary key.
+ * @param id
+ * @returns {function(model, string): Promise<int>}
+ */
 function del(id) {
     return (model, id_property_name) => {
         return new Promise((resolve, reject) => {
@@ -45,6 +82,14 @@ function del(id) {
     };
 }
 
+/**
+ * updates database entry with id to the values specified in item.
+ * resulting function returns the new updated item.
+ *
+ * @param id
+ * @param item
+ * @returns {function(model, string): Promise<Object>}
+ */
 function update(id, item) {
     return (model, id_property_name) => {
         if (item.id) {

@@ -1,11 +1,11 @@
 let fs = require('fs');
-let path = require('path');
 let fileUtils =require('./FileUtils');
 let config = require('../../config/Config');
 let unzipper = require("unzipper");
 
 /**
  * extracts a zip and puts its content here: config.files.unzipBuffer.
+ * Existing files will be overwritten.
  * returns a list of filePaths (= zip contents).
  *
  * @param zipFile

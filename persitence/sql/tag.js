@@ -1,5 +1,11 @@
 const { DataTypes } = require('sequelize');
 
+/**
+ * Function to create Tag Model
+ *
+ * @param connection: sequelize connection object
+ * @returns {Model|void}
+ */
 let tag = (connection) => {
     return connection.define('tag', {
         t_id: {

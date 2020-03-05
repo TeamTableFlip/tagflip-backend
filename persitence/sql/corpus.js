@@ -1,5 +1,11 @@
 const { DataTypes } = require('sequelize');
 
+/**
+ * Function to create Corpus Model
+ *
+ * @param connection: sequelize connection object
+ * @returns {Model|void}
+ */
 let corpus = (connection) => {
     return connection.define('corpus', {
         c_id: {

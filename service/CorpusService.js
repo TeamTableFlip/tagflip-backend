@@ -9,6 +9,11 @@ let hashing = require('../persitence/Hashing');
 let fileType = require('file-type');
 let {UserError, SystemError, NotFoundError} = require('./Exceptions');
 
+/**
+ * custom query to get the number of associated documents for a gavin corpus a well as corpus data as a bit of visual sugar in the gui.
+ * used by findAll() and get(id).
+ * @type {{include: {as: string, model: *, attributes: []}[], attributes: [string, string, string, [*, string]], group: [string]}}
+ */
 let findQuery = {
     attributes: [
         'c_id',
@@ -119,6 +124,18 @@ async function getDocumentCount(c_id) {
     };
 }
 
+/**
+ * Imports uploaded contents into database and file storage.
+ * This function first determines the type of files that where uploaded and picks either a direct import or a import of zip contents.
+ * In case a file could not be imported the file gets skipped and this functions continues with importing the other ones.
+ * All successful and unsuccessful files are getting collected and returned as lists.
+ *
+ * @param c_id id of corpus where the documents are supposed to go
+ * @param uploadedFiles a list of files (residing in config.files.temp)
+ * @param prefix a string that gets prepended before every file in uploadedFiles (including zip)
+ * @returns {Promise<{skippedItems: [{item: {filename: string}, reason: string}], items: [Document]}>}
+ *          two lists of items (document entities) that imported successfully and the once that failed.
+ */
 async function importFiles(c_id, uploadedFiles, prefix) {
     let corpus = await corpusModel.findByPk(c_id);
     if (corpus === undefined || corpus === null)
@@ -219,7 +236,7 @@ async function importFiles(c_id, uploadedFiles, prefix) {
                 item: {
                     filename: possibleZipFile.name
                 },reason: "unsupported file type. Allowed: application/zip or plain/text"}); // should never happen
-            return;
+            // return;
         }
     };
 
@@ -240,13 +257,14 @@ async function importFiles(c_id, uploadedFiles, prefix) {
 }
 
 
-async function exportJson() {
 
+async function exportJson() {
+    //TBI
 }
 
 
 async function exportZip(format) {
-
+    //TBI
 }
 
 

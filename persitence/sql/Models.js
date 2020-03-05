@@ -2,6 +2,8 @@
  * Entry point for database connection.
  * DDL (data models use this connection and create them self in the model classes).
  *
+ * Form here the ORM models can be imported and used in the app.
+ *
  * Created by Max Kuhmichel at 6.2.2020
  */
 
@@ -39,6 +41,7 @@ let corpus_annotationsetModel = corpus_annotationset(connection);
 let annotationsetModel = annotationset(connection);
 let annotationModel = annotation(connection);
 
+/* setup associations between model classes */
 annotationModel.belongsTo(annotationsetModel, {
     as: 'annotationset',
     foreignKey: 's_id',
@@ -107,6 +110,7 @@ documentModel.hasMany(tagModel,  {
     foreignKey: 'd_id'
 });
 
+/* make sure database is synced */
 connection.sync({
     //force: true /* recreates db on startup */
 }).then(() => {

@@ -17,6 +17,8 @@ let {UserError, SystemError, NotFoundError, ConflictError, AuthenticationError} 
  * GET /CRUD/type/{t_id}/other              findAllOthers
  * PUT /CRUD/type/{t_id}/other/{o_id}       setOther (aka type.addOther())
  * DELETE /CRUD/type/{t_id}/other/{o_id}    unsetOther (aka type.removeOther())
+ *
+ * created by and Jakub Kuklok and Max Kuhmichel.
  */
 
 /**

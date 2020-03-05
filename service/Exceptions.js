@@ -1,4 +1,7 @@
-
+/**
+ * class UserError.
+ * specifies an Error created by incorrect input.
+ */
 class UserError extends Error {
     constructor(message = "",  ...params) {
         super(...params);
@@ -10,6 +13,10 @@ class UserError extends Error {
     }
 }
 
+/**
+ * class SystemError.
+ * specifies an Error created by some bug.
+ */
 class SystemError extends Error {
     constructor(message = "",  ...params) {
         super(...params);
@@ -21,6 +28,10 @@ class SystemError extends Error {
     }
 }
 
+/**
+ * class NotFoundError.
+ * specifies an Error where a resource was not found.
+ */
 class NotFoundError extends Error {
     constructor(message = "",  ...params) {
         super(...params);
@@ -32,6 +43,10 @@ class NotFoundError extends Error {
     }
 }
 
+/**
+ * class AuthenticationError.
+ * specifies an Error where a resource can not be accessed by security constraints.
+ */
 class AuthenticationError extends Error {
     constructor(message = "",  ...params) {
         super(...params);
@@ -43,6 +58,10 @@ class AuthenticationError extends Error {
     }
 }
 
+/**
+ * class ConflictError.
+ * specifies an Error where a resource conflicts with already existing resource(s).
+ */
 class ConflictError extends Error {
     constructor(message = "",  ...params) {
         super(...params);
