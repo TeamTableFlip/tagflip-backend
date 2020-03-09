@@ -27,10 +27,9 @@ function sha256PW(password, salt) {
 }
 
 /**
- * Creates a sh256 hash value using a clear text password and a hex-formatted salt.
- * @param password The password to be hashed.
- * @param salt The salt to be used to hash with the password.
- * @returns {Buffer|string} The SHA256 hex-formatted string of the password and the salt.
+ * Creates a sh256 hash value of data.
+ * @param data data to be hashed.
+ * @returns {Buffer|string} The SHA256 hex-formatted string.
  */
 function sha256Hash(data) {
     let shasum = crypto.createHash('sha256');
