@@ -24,6 +24,10 @@ const connection= new Models(config.db.name, config.db.user, config.db.password,
 /* test connection: */
 connection.authenticate().then(() => {
     console.info('Connection has been established successfully.');
+}).catch(error => {
+    console.error("can not get access to database");
+    console.error(error);
+    process.exit(1);
 });
 
 /* make models with connection available: */
