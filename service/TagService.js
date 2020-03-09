@@ -1,5 +1,6 @@
 let {tagModel} = require('../persitence/sql/Models');
 let BaseCrudServiceFunctions = require('./BaseCrudServiceFunctions');
+let {UserError} = require("./Exceptions");
 
 function listAll() {
     return BaseCrudServiceFunctions.listAll()(tagModel);
@@ -31,7 +32,7 @@ function create(item) {
             failReasons.push("specified end_index missing, end_index is " + String(findOptions.where.end_index));
         }
         if (valid) resolve();
-        else reject(Error(failReasons.join(" ; ")));
+        else reject(UserError(failReasons.join(" ; ")));
     });
 
     return BaseCrudServiceFunctions.create(item)(tagModel, findOrCreateOptions, optionsValidator);

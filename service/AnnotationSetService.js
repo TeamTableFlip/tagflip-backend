@@ -1,3 +1,5 @@
+let {UserError} = require("./Exceptions");
+
 let BaseCrudServiceFunctions = require('./BaseCrudServiceFunctions');
 let {annotationsetModel, corpusModel} = require('../persitence/sql/Models');
 
@@ -37,7 +39,7 @@ function create(item) {
             findOptions.defaults.description = null;
         }
         if (valid) resolve();
-        else reject(Error(failReasons.join(" ; ")));
+        else reject(UserError(failReasons.join(" ; ")));
     });
 
     let findOrCreateOptions = {
