@@ -70,11 +70,8 @@ async function create(item) {
 
 async function del(id) {
     let corp = await corpusModel.findByPk(id);
-    let documents = await corp.getDocuments();
     // get documents and delete them first (including files on disk)
-    for (let doc of documents) {
-        await DocumentService.deleteOne(doc.d_id);
-    }
+    await DocumentService.deleteMany(corp);
     return BaseCrudServiceFunctions.del(id)(corpusModel, 'c_id');
 }
 

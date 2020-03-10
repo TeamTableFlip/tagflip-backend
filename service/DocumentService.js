@@ -80,6 +80,26 @@ async function del(id) {
     return id;
 }
 
+/**
+ * Delete all Documents of the given Corpus, by creating a single DELETE-Transaction and then removing all files from
+ * the disc.
+ * @param corpus The Corpus to delete the Documents from.
+ * @returns {Promise<void>}
+ */
+async function deleteMany(corpus) {
+    let documents = await documentModel.findAll({where: {c_id: corpus.c_id}});
+    await documentModel.destroy({where: {c_id: corpus.c_id}});
+    for(let document of documents) {
+        try {
+            await fileManager.deleteFile(document.filename);
+        } catch (e) {
+            console.error("failed to delete file from disk, reverting database update");
+            await documentModel.create(document);
+            throw new SystemError("failed to delete file from disk, reverting database update", e);
+        }
+    }
+}
+
 async function update(id, item) {
     if (item.id) {
         if (item.id !== id) {
@@ -112,6 +132,7 @@ module.exports = {
     getOne: get,
     updateOne: update,
     deleteOne: del,
+    deleteMany: deleteMany,
     createOne: create,
     getTags
 };
