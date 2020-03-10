@@ -1,14 +1,30 @@
+let {UserError} = require("./Exceptions");
+
 let BaseCrudServiceFunctions = require('./BaseCrudServiceFunctions');
 let {annotationsetModel, corpusModel} = require('../persitence/sql/Models');
 
+/**
+ * according to BaseCrudServiceFunctions.listAll() returns all AnnotationSets.
+ * @returns {Promise<Object[]>}
+ */
 function listAll() {
     return BaseCrudServiceFunctions.listAll()(annotationsetModel);
 }
 
+/**
+ * according to BaseCrudServiceFunctions.get() returns a AnnotationSet.
+ * @param id prim key of entity
+ * @returns {Promise<Object>}
+ */
 function get(id) {
     return BaseCrudServiceFunctions.get(id)(annotationsetModel);
 }
 
+/**
+ * according to BaseCrudServiceFunctions.create creates a entity and returns it.
+ * @param item
+ * @returns {Promise<Object>}
+ */
 function create(item) {
     let optionsValidator = (findOptions)=> new Promise((resolve, reject) => {
         let valid = true;
@@ -23,7 +39,7 @@ function create(item) {
             findOptions.defaults.description = null;
         }
         if (valid) resolve();
-        else reject(Error(failReasons.join(" ; ")));
+        else reject(UserError(failReasons.join(" ; ")));
     });
 
     let findOrCreateOptions = {
@@ -37,10 +53,21 @@ function create(item) {
     return BaseCrudServiceFunctions.create(item)(annotationsetModel, findOrCreateOptions, optionsValidator);
 }
 
+/**
+ * according to BaseCrudServiceFunctions.del deletes item with id as prim key.
+ * @param id
+ * @returns {Promise<int>} id of deleted item
+ */
 function del(id) {
     return BaseCrudServiceFunctions.del(id)(annotationsetModel, 's_id');
 }
 
+/**
+ * updates item prim key id with data in item. See BaseCrudServiceFunctions.update.
+ * @param id
+ * @param item
+ * @returns {Promise<Object>}
+ */
 function update(id, item) {
     return BaseCrudServiceFunctions.update(id, item)(annotationsetModel, 's_id');
 }

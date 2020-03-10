@@ -1,5 +1,6 @@
 let {annotationModel} = require('../persitence/sql/Models');
 let BaseCrudServiceFunctions = require('./BaseCrudServiceFunctions');
+let {UserError} = require("./Exceptions");
 
 function listAll() {
     return BaseCrudServiceFunctions.listAll()(annotationModel);
@@ -24,7 +25,7 @@ function create(item) {
             failReasons.push("specified name incorrect, name is " + String(findOptions.where.name));
         }
         if (valid) resolve();
-        else reject(Error(failReasons.join(" ; ")));
+        else reject(UserError(failReasons.join(" ; ")));
     });
 
     let findOrCreateOptions = {

@@ -1,5 +1,6 @@
 /**
  * Wrapper for node.js fs filesystem operations.
+ * Necessary because node fs wants to work with callbacks and we want promises.
  *
  * Created by Max Kuhmichel at 7.2.2020
  */
@@ -7,6 +8,11 @@
 let fs = require('fs');
 let path = require('path');
 
+/**
+ * check weather user has access to a file.
+ * @param filepath
+ * @returns {Promise<*>}
+ */
 function checkFileExists(filepath) {
     return new Promise((resolve, reject) => {
         fs.access(filepath, fs.F_OK, error => {
@@ -15,6 +21,12 @@ function checkFileExists(filepath) {
     });
 }
 
+/**
+ * reads file info.
+ * @param path
+ * @returns {Promise<unknown>}
+ * @private
+ */
 function _getStats(path) {
     return new Promise((resolve, reject) => {
         fs.lstat(path, (err, stats) => {
@@ -24,6 +36,11 @@ function _getStats(path) {
     });
 }
 
+/**
+ * delete folder recursively with contents.
+ * @param path
+ * @returns {Promise<unknown>}
+ */
 function rmDir(path) {
     return new Promise((resolve, reject) => {
         fs.rmdir(path, {recursive: true}, err => {
@@ -34,6 +51,11 @@ function rmDir(path) {
 }
 
 
+/**
+ * create all directory substructures for filepath
+ * @param filepath
+ * @returns {Promise<unknown>}
+ */
 function mkdirs(filepath) {
     return new Promise((resolve, reject) => {
         if(fs.existsSync(path.dirname(filepath))) {
@@ -48,6 +70,11 @@ function mkdirs(filepath) {
     });
 }
 
+/**
+ * create directory for filepath
+ * @param filepath
+ * @returns {Promise<unknown>}
+ */
 function mkdir(filepath) {
     return new Promise((resolve, reject) => {
         console.log(filepath);
@@ -63,7 +90,11 @@ function mkdir(filepath) {
     });
 }
 
-
+/**
+ * read file content.
+ * @param filepath
+ * @returns {Promise<unknown>}
+ */
 function readFileData(filepath) {
     return new Promise((resolve, reject) => {
         fs.readFile(filepath, (err, data) => {
@@ -73,6 +104,13 @@ function readFileData(filepath) {
     });
 }
 
+/**
+ * save file content
+ * @param filePath
+ * @param data
+ * @param encoding default is utf-8
+ * @returns {Promise<unknown>}
+ */
 function saveFileData(filePath, data, encoding = 'utf-8') {
     return new Promise((resolve, reject) => {
         fs.writeFile(filePath, data, encoding,  (err) => {
@@ -82,6 +120,11 @@ function saveFileData(filePath, data, encoding = 'utf-8') {
     });
 }
 
+/**
+ * deletes file of link.
+ * @param filePath
+ * @returns {Promise<unknown>}
+ */
 function unlinkFile(filePath) {
     return new Promise((resolve, reject) => {
         fs.unlink(filePath,  (err) => {
@@ -91,6 +134,13 @@ function unlinkFile(filePath) {
     });
 }
 
+/**
+ * copies file from source to target
+ * @param source
+ * @param target
+ * @param deleteOld if true source gets deleted
+ * @returns {Promise<unknown>}
+ */
 function copyFile (source, target, deleteOld = false) {
     return new Promise((resolve, reject) => {
         fs.copyFile(source, target ,(err) => {

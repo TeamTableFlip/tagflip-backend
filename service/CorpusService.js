@@ -63,7 +63,7 @@ async function create(item) {
             failReasons.push("specified name incorrect, name is " + String(findOptions.where.name));
         }
         if (valid) resolve(valid);
-        else reject(new Error(failReasons.join(" ; ")));
+        else reject(new UserError(failReasons.join(" ; ")));
     });
     return BaseCrudServiceFunctions.create(item)(corpusModel, findOrCreateOptions, optionsValidator);
 }
