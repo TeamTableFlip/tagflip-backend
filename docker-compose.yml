@@ -19,6 +19,7 @@ services:
     env_file:
       - docker.env
     ports:
-      - "3306"
+      - "127.0.0.1::3306"
+      - "127.0.0.1::33060"
     volumes:
       - /opt/tagflip/db:/var/lib/mysql
