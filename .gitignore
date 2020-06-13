@@ -40,3 +40,4 @@ package-lock.json
 # user secrets and configs
 /config/local*
 /config/*secret*
+docker.env
