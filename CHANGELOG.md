@@ -13,5 +13,5 @@
 
 ### Features
 
-* addinf semantic release plugin ([bb3cec1](https://github.com/fhswf/tagflip-backend/commit/bb3cec16b21e057e63dba42aa26d1325695c0638))
+* adding semantic release plugin ([bb3cec1](https://github.com/fhswf/tagflip-backend/commit/bb3cec16b21e057e63dba42aa26d1325695c0638))
 * **docker:** added Dockerfile and docker-compose.yml ([b238045](https://github.com/fhswf/tagflip-backend/commit/b2380452de647ea9b11d7dc65c4986b9060782a4))
