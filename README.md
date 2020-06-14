@@ -1,3 +1,5 @@
+![release](https://github.com/fhswf/tagflip-backend/workflows/release/badge.svg)
+
 # Installation
 
 ## Using docker-compose
