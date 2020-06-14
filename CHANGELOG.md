@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/fhswf/tagflip-backend/compare/v1.0.0...v1.0.1) (2020-06-14)
+
+
+### Bug Fixes
+
+* added @semantic-release/npm for update of package.json ([4ef60f0](https://github.com/fhswf/tagflip-backend/commit/4ef60f0e6b62728bc25086433122165c42bdde02))
+
 # 1.0.0 (2020-06-14)
 
 
