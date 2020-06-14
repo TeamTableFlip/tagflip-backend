@@ -4,10 +4,10 @@
  * Module dependencies.
  */
 
-let app = require('../app');
+let app = require('./app');
 let debug = require('debug')('tagflip-backend:server');
 let http = require('http');
-let config = require('../config/Config');
+let config = require('./config/Config');
 
 /**
  * Get port from environment and store in Express.

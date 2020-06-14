@@ -1,9 +1,35 @@
 {
   "name": "tagflip-backend",
   "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fhswf/tagflip-backend.git"
+  },
+  "contributors": [
+    {
+      "name": "Jakub Kuklok"
+    },
+    {
+      "name": "Timo Neuhaus"
+    },
+    {
+      "name": "Max Kuhmichel"
+    },
+    {
+      "name": "Christian Gawron",
+      "email": "gawron.christian@fh-swf.de"
+    }
+  ],
+  "license": "MIT",
   "private": true,
   "files": [
     "index.js",
+    "app.js",
+    "config/*",
+    "persistence/**",
+    "routes/**",
+    "schema/**",
+    "service/**",
     "CHANGELOG.md",
     "package.json",
     "package-lock.json"
