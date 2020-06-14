@@ -10,6 +10,10 @@ function get(id) {
     return BaseCrudServiceFunctions.get(id)(tagModel);
 }
 
+/** Create a tag.
+ * 
+ * @param {item} tag to create
+ */
 function create(item) {
     let findOrCreateOptions = {
         where: {

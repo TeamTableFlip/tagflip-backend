@@ -45,17 +45,26 @@ async function create(item) {
     let ts = Date.now();
     let cor = await corpusModel.findByPk(item.c_id);
     let corpusDocuments = await cor.getDocuments();
-    for (let doc of corpusDocuments) {
-        if (doc.document_hash === hash) throw new UserError("file content already present in this corpus");
-    }
-    let [doc, created] = await documentModel.findOrCreate({
-        where: {
-            c_id: item.c_id,
-            filename: item.filename,
-            document_hash: hash,
-            last_edited: ts
+    let existing = false;
+    let doc;
+    let created = false;
+    for (doc of corpusDocuments) {
+        if (doc.document_hash === hash) {
+            existing = true;
+            creates = false;
         }
-    });
+
+    }
+    if (!existing) {
+        [doc, created] = await documentModel.findOrCreate({
+            where: {
+                c_id: item.c_id,
+                filename: item.filename,
+                document_hash: hash,
+                last_edited: ts
+            }
+        });
+    }
     try {
         if (item.text) await fileManager.saveFile(doc.filename, !created, item.text);
     } catch (e) { // roll back database creation
