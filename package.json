@@ -9,7 +9,8 @@
     "package-lock.json"
   ],
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "test": "echo \"No tests yet\" && exit 0"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
