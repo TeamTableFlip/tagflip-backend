@@ -1,6 +1,6 @@
-let {tagModel} = require('../persitence/sql/Models');
+let { tagModel } = require('../persistence/sql/Models');
 let BaseCrudServiceFunctions = require('./BaseCrudServiceFunctions');
-let {UserError} = require("./Exceptions");
+let { UserError } = require("./Exceptions");
 
 function listAll() {
     return BaseCrudServiceFunctions.listAll()(tagModel);
@@ -20,14 +20,14 @@ function create(item) {
         }
     };
 
-    let optionsValidator = (findOptions)=> new Promise((resolve, reject) => {
+    let optionsValidator = (findOptions) => new Promise((resolve, reject) => {
         let valid = true;
         let failReasons = [];
-        if (findOptions.where.start_index === undefined || findOptions.where.start_index === null ) {
+        if (findOptions.where.start_index === undefined || findOptions.where.start_index === null) {
             valid = false;
             failReasons.push("specified start_index missing, start_index is " + String(findOptions.where.start_index));
         }
-        if (findOptions.where.end_index === undefined || findOptions.where.end_index === null ) {
+        if (findOptions.where.end_index === undefined || findOptions.where.end_index === null) {
             valid = false;
             failReasons.push("specified end_index missing, end_index is " + String(findOptions.where.end_index));
         }

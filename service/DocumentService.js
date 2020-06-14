@@ -5,10 +5,10 @@
  *
  * TODO: create some kind of timed cleanup procedure that runs over night and makes sure everything is as it's supposed to.
  */
-let {SystemError, UserError} = require('./Exceptions');
-let {documentModel, corpusModel} = require('../persitence/sql/Models');
-let hashing = require('../persitence/Hashing');
-let fileManager = require('../persitence/filesystem/FileManager');
+let { SystemError, UserError } = require('./Exceptions');
+let { documentModel, corpusModel } = require('../persistence/sql/Models');
+let hashing = require('../persistence/Hashing');
+let fileManager = require('../persistence/filesystem/FileManager');
 
 async function listAll() {
     let documents = await documentModel.findAll();
@@ -69,7 +69,7 @@ async function create(item) {
 
 async function del(id) {
     let doc = await documentModel.findByPk(id);
-    await documentModel.destroy({where: {d_id: id}});
+    await documentModel.destroy({ where: { d_id: id } });
     try {
         await fileManager.deleteFile(doc.filename);
     } catch (e) {
@@ -87,9 +87,9 @@ async function del(id) {
  * @returns {Promise<void>}
  */
 async function deleteMany(corpus) {
-    let documents = await documentModel.findAll({where: {c_id: corpus.c_id}});
-    await documentModel.destroy({where: {c_id: corpus.c_id}});
-    for(let document of documents) {
+    let documents = await documentModel.findAll({ where: { c_id: corpus.c_id } });
+    await documentModel.destroy({ where: { c_id: corpus.c_id } });
+    for (let document of documents) {
         try {
             await fileManager.deleteFile(document.filename);
         } catch (e) {
@@ -108,7 +108,7 @@ async function update(id, item) {
         }
     }
     let old_doc = await documentModel.findByPk(id);
-    let updatesArray = await documentModel.update(item, {where: {d_id: id}});
+    let updatesArray = await documentModel.update(item, { where: { d_id: id } });
     // TODO do something with return value (seems to be somewhat ambiguous)
     let new_doc = await documentModel.findByPk(id);
     try {
@@ -116,7 +116,7 @@ async function update(id, item) {
         new_doc.dataValues['text'] = await fileManager.readFile(new_doc.filename);
     } catch (e) {
         console.error("failed to move file on disk, reverting database update");
-        await documentModel.update(old_doc, {where: {d_id: id}});
+        await documentModel.update(old_doc, { where: { d_id: id } });
         throw new SystemError("failed to delete file from disk, reverting database update", e);
     }
     return new_doc;

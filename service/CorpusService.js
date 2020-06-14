@@ -1,13 +1,13 @@
-let {corpusModel, annotationsetModel, documentModel, connection} = require('../persitence/sql/Models');
-let FileManager = require('../persitence/filesystem/FileManager');
+let { corpusModel, annotationsetModel, documentModel, connection } = require('../persistence/sql/Models');
+let FileManager = require('../persistence/filesystem/FileManager');
 let BaseCrudServiceFunctions = require('./BaseCrudServiceFunctions');
 let DocumentService = require('./DocumentService');
 let config = require('../config/Config');
-let zip = require('../persitence/filesystem/Zippper');
+let zip = require('../persistence/filesystem/Zippper');
 let path = require('path');
-let hashing = require('../persitence/Hashing');
+let hashing = require('../persistence/Hashing');
 let fileType = require('file-type');
-let {UserError, SystemError, NotFoundError} = require('./Exceptions');
+let { UserError, SystemError, NotFoundError } = require('./Exceptions');
 
 /**
  * custom query to get the number of associated documents for a gavin corpus a well as corpus data as a bit of visual sugar in the gui.
@@ -46,11 +46,11 @@ async function create(item) {
         where: {
             name: item.name
         },
-        defaults:  {
+        defaults: {
             description: item.description
         }
     };
-    let optionsValidator = (findOptions)=> new Promise((resolve, reject) => {
+    let optionsValidator = (findOptions) => new Promise((resolve, reject) => {
         let valid = true;
         let failReasons = [];
         if (findOptions.defaults.description === undefined || findOptions.defaults.description === null ||
@@ -156,17 +156,19 @@ async function importFiles(c_id, uploadedFiles, prefix) {
                 skippedFiles.push({
                     item: {
                         filename: targetFileName
-                    }, reason: "file content is already present in corpus"});
+                    }, reason: "file content is already present in corpus"
+                });
                 return;
             }
             try {
-                await FileManager.moveFile(filePath,targetFileName, false, true);
+                await FileManager.moveFile(filePath, targetFileName, false, true);
             } catch (e) {
                 console.error(e);
                 skippedFiles.push({
                     item: {
                         filename: targetFileName
-                    }, reason: "failed to move document into storage, reason: " + e.message});
+                    }, reason: "failed to move document into storage, reason: " + e.message
+                });
                 return;
             }
             let timestamp = Date.now();
@@ -184,7 +186,8 @@ async function importFiles(c_id, uploadedFiles, prefix) {
             skippedFiles.push({
                 item: {
                     filename: targetFileName
-                }, reason: "failed to create database entry"});
+                }, reason: "failed to create database entry"
+            });
             await FileManager.deleteFile(targetFileName);
             return;
         }
@@ -199,24 +202,26 @@ async function importFiles(c_id, uploadedFiles, prefix) {
             let result = await zip.extractZip(possibleZipFile.tempFilePath);
             for (let file of result.files) { // many files from zip extract
                 let targetFileName = null;
-                if (file.startsWith(config.files.unzipBuffer)){
+                if (file.startsWith(config.files.unzipBuffer)) {
                     if (prefix && prefix.length > 0)
-                        targetFileName =  path.join(c_id.toString(), prefix,possibleZipFile.name,file.slice(config.files.unzipBuffer.length));
+                        targetFileName = path.join(c_id.toString(), prefix, possibleZipFile.name, file.slice(config.files.unzipBuffer.length));
                     else
-                        targetFileName =  path.join(c_id.toString(), possibleZipFile.name,file.slice(config.files.unzipBuffer.length));
+                        targetFileName = path.join(c_id.toString(), possibleZipFile.name, file.slice(config.files.unzipBuffer.length));
                     let type = await FileManager.checkFileType(file);
                     if (!(type.ext === 'txt' || type.ext === 'ics' || type.ext === 'xml')) {
                         skippedFiles.push({
                             item: {
                                 filename: targetFileName
-                            }, reason: "file is not a plain text file"});
+                            }, reason: "file is not a plain text file"
+                        });
                         continue;
                     }
                 } else {
                     skippedFiles.push({
                         item: {
                             filename: targetFileName
-                        }, reason: "file does not have a correct path"}); // should never happen
+                        }, reason: "file does not have a correct path"
+                    }); // should never happen
                     continue;
                 }
                 await _processFile(file, targetFileName);
@@ -224,15 +229,16 @@ async function importFiles(c_id, uploadedFiles, prefix) {
         } else if (possibleZipFile.mimetype === "text/plain") {
             let targetFileName = null;
             if (prefix && prefix.length > 0)
-                targetFileName =  path.join(c_id.toString(), prefix,possibleZipFile.name);
+                targetFileName = path.join(c_id.toString(), prefix, possibleZipFile.name);
             else
-                targetFileName =  path.join(c_id.toString(), possibleZipFile.name);
+                targetFileName = path.join(c_id.toString(), possibleZipFile.name);
             await _processFile(possibleZipFile.tempFilePath, targetFileName)
         } else {
             skippedFiles.push({
                 item: {
                     filename: possibleZipFile.name
-                },reason: "unsupported file type. Allowed: application/zip or plain/text"}); // should never happen
+                }, reason: "unsupported file type. Allowed: application/zip or plain/text"
+            }); // should never happen
             // return;
         }
     };

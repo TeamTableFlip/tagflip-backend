@@ -1,6 +1,6 @@
-let {annotationModel} = require('../persitence/sql/Models');
+let { annotationModel } = require('../persistence/sql/Models');
 let BaseCrudServiceFunctions = require('./BaseCrudServiceFunctions');
-let {UserError} = require("./Exceptions");
+let { UserError } = require("./Exceptions");
 
 function listAll() {
     return BaseCrudServiceFunctions.listAll()(annotationModel);
@@ -11,7 +11,7 @@ function get(id) {
 }
 
 function create(item) {
-    let optionsValidator = (findOptions)=> new Promise((resolve, reject) => {
+    let optionsValidator = (findOptions) => new Promise((resolve, reject) => {
         let valid = true;
         let failReasons = [];
         if (findOptions.where.color === undefined || findOptions.where.color === null ||
