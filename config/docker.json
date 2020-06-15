@@ -1,0 +1,19 @@
+{
+    "name": "TagFlip",
+    "serverPort": 3000,
+    "allowedOrigins": [
+        "http://localhost:8080"
+    ],
+    "db": {
+        "name": "tagflip",
+        "host": "mysql",
+        "dialect": "mysql",
+        "password": "tagflip",
+        "user": "root"
+    },
+    "files": {
+        "prefix": "/opt/tagflip/data",
+        "temp": "/opt/tagflip/temp",
+        "unzipBuffer": "/opt/tagflip/temp/unzipBuffer"
+    }
+}

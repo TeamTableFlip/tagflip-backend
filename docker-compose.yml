@@ -9,6 +9,8 @@ services:
       - docker.env
     ports:
       - "127.0.0.1:5000:5000"
+    volumes:
+      - /opt/tagflip:/opt/tagflip
     links:
       - mysql
 

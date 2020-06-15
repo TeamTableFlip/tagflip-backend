@@ -15,8 +15,9 @@ const annotationSetService = require("./AnnotationSetService")
 
 class IOB_TSV_Importer {
 
-    constructor(name) {
+    constructor(name, annotationSetName) {
         this.name = name
+        this.annotationSetName = annotationSetName
     }
 
     async read(stream) {
@@ -25,6 +26,14 @@ class IOB_TSV_Importer {
             this.corpus = await corpusService.createOne({ name: this.name })
         }
 
+        if (!this.annotationSet) {
+            this.annotationSet = await annotationSetService.createOne({ name: this.annotationSetName })
+        }
+        this.annotations = new Map()
+        annotationSetService.getAnnotations(this.annotationSet.s_id)
+            .then(annos => annos.forEach(anno => this.annotations.set(anno.name, anno)))
+        console.log("annotations: %o", this.annotations)
+
         const rl = readline.createInterface({
             input: stream,
             crlfDelay: Infinity
@@ -32,7 +41,7 @@ class IOB_TSV_Importer {
 
         this.tagSet = new Set()
         this.text = ''
-        this.annotations = []
+        this.tags = []
 
         let lines = []
         for await (const line of rl) {
@@ -46,7 +55,7 @@ class IOB_TSV_Importer {
                 record.annotations.forEach(anno => {
                     anno.start += offset
                     anno.end += offset
-                    this.annotations.push(anno)
+                    this.tags.push(anno)
                 })
                 lines = []
             }
@@ -61,9 +70,24 @@ class IOB_TSV_Importer {
         let doc = await documentService.createOne({
             c_id: this.corpus.c_id,
             text: this.text,
-            filename: "test.txt"
+            filename: "dev.txt"
         })
-        console.log("doc: %o", doc)
+
+        this.tags.forEach(tag => {
+            if (this.annotations.has(tag.name)) {
+                tagService.createOne({
+                    a_id: this.annotations.get(tag.name).a_id,
+                    d_id: doc.d_id,
+                    start_index: tag.start,
+                    end_index: tag.end
+                })
+                    .catch(console.error)
+            }
+            else {
+                console.warn("annotation %s not in annotation set %s [%o]",
+                    tag.name, this.annotationSetName, this.annotations);
+            }
+        })
     }
 
     createRecord(lines) {
@@ -94,7 +118,7 @@ class IOB_TSV_Importer {
                     this.tagSet.add(tag.split('-')[1])
                     current[j] = {
                         start: start[i],
-                        tag: tag.split('-')[1]
+                        name: tag.split('-')[1]
                     }
                 }
             })
@@ -110,6 +134,6 @@ class IOB_TSV_Importer {
     }
 }
 
-importer = new IOB_TSV_Importer("GermEval 2014")
+importer = new IOB_TSV_Importer("GermEval NER", "NER")
 
 importer.read(fs.createReadStream(process.argv[2]))
