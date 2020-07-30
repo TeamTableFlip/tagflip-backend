@@ -101,7 +101,7 @@ class IOB_TSV_Importer {
             //console.log(`${i} => ${fields}`)
             start[i] = text.length
             text += fields[1] + ' '
-            end[i] = text.length - 2
+            end[i] = text.length - 1
 
             fields.slice(2).forEach((tag, j) => {
                 //console.log(tag)
