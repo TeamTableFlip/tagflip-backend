@@ -5,8 +5,9 @@
  * This module provides functionality to import existing annotated corpora, i.e. CoNLL or GermEval data sets.
  */
 
-const fs = require('fs');
+
 const readline = require('readline');
+const { v4: uuidv4 } = require('uuid');
 
 const corpusService = require("./CorpusService");
 const documentService = require("./DocumentService");
@@ -20,18 +21,27 @@ class IOB_TSV_Importer {
         this.annotationSet = annotationSet;
     }
 
-    static async getImporter(corpus, annotationSet) {
-        if (corpus instanceof String) {
-            corpus = await corpusService.createOne({ name: corpus })
-        }
+    static getImporter(corpus, annotationSet) {
 
-        if (annotationSet instanceof String) {
-            annotationSet = await annotationSetService.createOne({ name: annotationSet })
-        }
         return new IOB_TSV_Importer(corpus, annotationSet);
     }
 
     async import(stream) {
+        console.log('import: %s %s', typeof (this.annotationSet), typeof (this.corpus));
+
+        if (typeof (this.corpus) === 'string' || this.corpus instanceof String) {
+            console.log('getting/creating corpus');
+            this.corpus = await corpusService.createOne({ name: this.corpus });
+
+            console.log('corpus: %o', this.corpus);
+        }
+
+        if (typeof (this.annotationSet) === 'string' || this.annotationSet instanceof String) {
+            this.annotationSet = await annotationSetService.createOne({ name: this.annotationSet });
+            console.log('annotationSet: %o', this.annotationSet);
+        }
+
+        console.log('using Importer: %o %o', this.corpus, this.annotationSet);
 
 
         this.annotations = new Map()
@@ -75,18 +85,24 @@ class IOB_TSV_Importer {
         let doc = await documentService.createOne({
             c_id: this.corpus.c_id,
             text: this.text,
-            filename: "dev.txt"
+            filename: `${uuidv4()}.txt`
         })
 
-        this.tags.forEach(tag => {
+        this.tags.forEach(async (tag) => {
             if (this.annotations.has(tag.name)) {
-                tagService.createOne({
-                    a_id: this.annotations.get(tag.name).a_id,
-                    d_id: doc.d_id,
-                    start_index: tag.start,
-                    end_index: tag.end
-                })
-                    .catch(console.error)
+                try {
+                    await tagService.createOne({
+                        a_id: this.annotations.get(tag.name).a_id,
+                        d_id: doc.d_id,
+                        start_index: tag.start,
+                        end_index: tag.end
+                    });
+                    // await new Promise(resolve => setTimeout(resolve, 500));
+                }
+                catch (err) {
+                    console.error('failed to create tag %o: %o', tag, err);
+                    // await new Promise(resolve => setTimeout(resolve, 5000));
+                }
             }
             else {
                 console.warn("annotation %s not in annotation set %s [%o]",
@@ -139,11 +155,10 @@ class IOB_TSV_Importer {
     }
 }
 
-export default {
-    provides: 'IOB TSV',
+module.exports = {
+    provides: ['text/tab-separated-values', 'IOB TSV', 'NoSta-D'],
+    description: 'IOB format used by [NoSta-D](https://www.aclweb.org/anthology/L14-1251/)',
     create: IOB_TSV_Importer.getImporter
 };
 
 
-// importer = new IOB_TSV_Importer("GermEval NER", "NER")
-// importer.read(fs.createReadStream(process.argv[2]))

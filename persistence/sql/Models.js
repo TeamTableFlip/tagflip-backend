@@ -13,13 +13,13 @@ const config = require('../../config/Config');
 const connection = new Models(config.db.name, config.db.user, config.db.password, {
     host: config.db.host,
     port: config.db.port,
-    dialect: config.db.dialect
-    // pool: {
-    //     max: 10,
-    //     min: 0,
-    //     acquire: 30000,
-    //     idle: 10000
-    // }
+    dialect: config.db.dialect,
+    pool: {
+        max: 60,
+        min: 0,
+        acquire: 600000,
+        idle: 10000
+    }
 });
 
 /* test connection: */
