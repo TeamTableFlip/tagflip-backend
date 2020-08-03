@@ -24,6 +24,7 @@ let documentRouter = require('./routes/DocumentController');
 let annotationSetRouter = require('./routes/AnnotationSetController');
 let annotationRouter = require('./routes/AnnotationController');
 let tagRouter = require('./routes/TagController');
+let importRouter = require('./routes/ImportController');
 
 // configure cors
 let corsOptions = {
@@ -60,6 +61,7 @@ app.use('/annotation', annotationRouter);
 app.use('/tag', tagRouter);
 app.use('/annotationset', annotationSetRouter);
 app.use('/document', documentRouter);
+app.use('/import', importRouter);
 
 // error handler
 app.use(function (err, req, res, next) {

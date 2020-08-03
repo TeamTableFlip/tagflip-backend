@@ -11,6 +11,7 @@
   "db": {
     "name": "tagflip",
     "host": "localhost",
+    "port": 3306,
     "dialect": "mysql",
     "password": "",
     "user": "root"

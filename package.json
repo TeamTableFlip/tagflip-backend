@@ -35,7 +35,7 @@
     "package-lock.json"
   ],
   "scripts": {
-    "start": "node ./bin/www",
+    "start": "node index.js",
     "test": "echo \"No tests yet\" && exit 0"
   },
   "dependencies": {
@@ -45,12 +45,13 @@
     "express": "~4.16.1",
     "express-fileupload": "~1.1.6",
     "file-type": "~14.1.2",
-    "lodash": "~4.17.15",
+    "lodash": "^4.17.19",
     "morgan": "~1.9.1",
     "mysql2": "~2.1.0",
     "semver": "latest",
     "sequelize": "~5.21.3",
-    "unzipper": "~0.10.8"
+    "unzipper": "~0.10.8",
+    "uuid": "^8.3.0"
   },
   "engineStrict": true,
   "engines": {
@@ -63,6 +64,6 @@
     "@semantic-release/github": "^7.0.7",
     "@semantic-release/npm": "^7.0.5",
     "@semantic-release/release-notes-generator": "^9.0.1",
-    "semantic-release": "^17.0.8"
+    "semantic-release": "^17.1.1"
   }
 }

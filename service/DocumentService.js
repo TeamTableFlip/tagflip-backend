@@ -30,7 +30,7 @@ async function create(item) {
     if (item.id)
         item.id = undefined;
     if (!item.text)
-        throw UserError("no text specified");
+        throw new UserError("no text specified");
 
     let valid = true;
     let failReasons = [];
@@ -39,23 +39,32 @@ async function create(item) {
         valid = false;
         failReasons.push("specified filename missing, filename is " + String(item.filename));
     }
-    if (!valid) throw UserError(failReasons.join("; "));
+    if (!valid) throw new UserError(failReasons.join("; "));
 
     let hash = hashing.sha256Hash(item.text);
     let ts = Date.now();
     let cor = await corpusModel.findByPk(item.c_id);
     let corpusDocuments = await cor.getDocuments();
-    for (let doc of corpusDocuments) {
-        if (doc.document_hash === hash) throw UserError("file content already present in this corpus");
-    }
-    let [doc, created] = await documentModel.findOrCreate({
-        where: {
-            c_id: item.c_id,
-            filename: item.filename,
-            document_hash: hash,
-            last_edited: ts
+    let existing = false;
+    let doc;
+    let created = false;
+    for (doc of corpusDocuments) {
+        if (doc.document_hash === hash) {
+            existing = true;
+            creates = false;
         }
-    });
+
+    }
+    if (!existing) {
+        [doc, created] = await documentModel.findOrCreate({
+            where: {
+                c_id: item.c_id,
+                filename: item.filename,
+                document_hash: hash,
+                last_edited: ts
+            }
+        });
+    }
     try {
         if (item.text) await fileManager.saveFile(doc.filename, !created, item.text);
     } catch (e) { // roll back database creation

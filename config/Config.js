@@ -2,6 +2,7 @@ let ld = require('lodash');
 let fs = require('fs');
 let defaultConfig = require('./default.json');
 let environment = process.env.NODE_ENV || 'development';
+console.info("environment: %s", environment)
 let environmentConfig = require('./' + environment + '.json');
 let config = ld.merge(defaultConfig, environmentConfig);
 
@@ -16,9 +17,9 @@ try {
         let localConfig = require('./local');
         config = ld.merge(config, localConfig);
     } else {
-      console.info("no local config found, using environment config variables only");
+        console.info("no local config found, using environment config variables only");
     }
-} catch(err) {
+} catch (err) {
     console.error(err);
     console.warn("error on looking for local config, using environment variables only");
 }

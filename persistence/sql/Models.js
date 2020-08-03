@@ -7,18 +7,19 @@
  * Created by Max Kuhmichel at 6.2.2020
  */
 
-const {Sequelize: Models} = require('sequelize');
+const { Sequelize: Models } = require('sequelize');
 const config = require('../../config/Config');
 /* create connection: */
-const connection= new Models(config.db.name, config.db.user, config.db.password, {
+const connection = new Models(config.db.name, config.db.user, config.db.password, {
     host: config.db.host,
-    dialect: config.db.dialect
-    // pool: {
-    //     max: 10,
-    //     min: 0,
-    //     acquire: 30000,
-    //     idle: 10000
-    // }
+    port: config.db.port,
+    dialect: config.db.dialect,
+    pool: {
+        max: 60,
+        min: 0,
+        acquire: 600000,
+        idle: 10000
+    }
 });
 
 /* test connection: */
@@ -31,12 +32,12 @@ connection.authenticate().then(() => {
 });
 
 /* make models with connection available: */
-let {annotation} = require('./annotation');
-let {annotationset} = require('./annotationset');
-let {corpus_annotationset} = require('./corpus_annotationset');
-let {document} = require('./document');
-let {corpus} = require('./corpus');
-let {tag} = require('./tag');
+let { annotation } = require('./annotation');
+let { annotationset } = require('./annotationset');
+let { corpus_annotationset } = require('./corpus_annotationset');
+let { document } = require('./document');
+let { corpus } = require('./corpus');
+let { tag } = require('./tag');
 
 let tagModel = tag(connection);
 let corpusModel = corpus(connection);
@@ -108,7 +109,7 @@ tagModel.belongsTo(documentModel, {
     onDelete: 'CASCADE'
 });
 
-documentModel.hasMany(tagModel,  {
+documentModel.hasMany(tagModel, {
     as: 'tags',
     sourceKey: 'd_id',
     foreignKey: 'd_id'
