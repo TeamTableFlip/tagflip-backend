@@ -28,9 +28,9 @@ router.post('/',
                 return importer.import(fs.createReadStream(file.tempFilePath));
             })
             .then(() => {
-                res.status(204).send(success);
+                res.status(204).send("success");
             })
-            .catch((err) => res.status(500).send(err));
+            .catch((err) => res.status(500).send({ status: "failure", error: err }));
     });
 
 

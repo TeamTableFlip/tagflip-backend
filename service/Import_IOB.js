@@ -33,15 +33,15 @@ class IOB_TSV_Importer {
             console.log('getting/creating corpus');
             this.corpus = await corpusService.createOne({ name: this.corpus });
 
-            console.log('corpus: %o', this.corpus);
+            // console.log('corpus: %o', this.corpus);
         }
 
         if (typeof (this.annotationSet) === 'string' || this.annotationSet instanceof String) {
             this.annotationSet = await annotationSetService.createOne({ name: this.annotationSet });
-            console.log('annotationSet: %o', this.annotationSet);
+            // console.log('annotationSet: %o', this.annotationSet);
         }
 
-        console.log('using Importer: %o %o', this.corpus, this.annotationSet);
+        //console.log('using Importer: %o %o', this.corpus, this.annotationSet);
 
 
         this.annotations = new Map()
@@ -108,7 +108,7 @@ class IOB_TSV_Importer {
                 console.warn("annotation %s not in annotation set %s [%o]",
                     tag.name, this.annotationSetName, this.annotations);
             }
-        })
+        });
     }
 
     createRecord(lines) {
