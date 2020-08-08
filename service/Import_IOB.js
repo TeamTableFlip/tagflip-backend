@@ -13,6 +13,7 @@ const corpusService = require("./CorpusService");
 const documentService = require("./DocumentService");
 const tagService = require("./TagService");
 const annotationSetService = require("./AnnotationSetService");
+const { UserError } = require('./Exceptions');
 
 class IOB_TSV_Importer {
 
@@ -29,17 +30,18 @@ class IOB_TSV_Importer {
     async import(stream) {
         console.log('import: %s %s', typeof (this.annotationSet), typeof (this.corpus));
 
-        if (typeof (this.corpus) === 'string' || this.corpus instanceof String) {
-            console.log('getting/creating corpus');
-            this.corpus = await corpusService.createOne({ name: this.corpus });
-
-            // console.log('corpus: %o', this.corpus);
-        }
-
         if (typeof (this.annotationSet) === 'string' || this.annotationSet instanceof String) {
             this.annotationSet = await annotationSetService.createOne({ name: this.annotationSet });
             // console.log('annotationSet: %o', this.annotationSet);
         }
+
+        if ((typeof (this.corpus) === 'string' || this.corpus instanceof String) && this.corpus.length > 0) {
+            console.log('getting/creating corpus');
+            this.corpus = await corpusService.createOne({ name: this.corpus });
+        }
+        else throw new UserError("missing corpus name");
+
+        await corpusService.addAnnotationset(this.corpus.c_id, this.annotationSet.s_id);
 
         //console.log('using Importer: %o %o', this.corpus, this.annotationSet);
 
@@ -86,7 +88,8 @@ class IOB_TSV_Importer {
             c_id: this.corpus.c_id,
             text: this.text,
             filename: `${uuidv4()}.txt`
-        })
+        });
+        this.corpus.num_documents = 1;
 
         this.tags.forEach(async (tag) => {
             if (this.annotations.has(tag.name)) {
@@ -109,6 +112,8 @@ class IOB_TSV_Importer {
                     tag.name, this.annotationSetName, this.annotations);
             }
         });
+
+        return this.corpus;
     }
 
     createRecord(lines) {
@@ -146,9 +151,9 @@ class IOB_TSV_Importer {
         });
         for (let j = 0; j < current.length; j++) {
             if (current[j] != null) {
-                current[j].end = end[end.length - 1]
-                annos.push(current[j])
-                current[j] = null
+                current[j].end = end[end.length - 1];
+                annos.push(current[j]);
+                current[j] = null;
             }
         }
         return { text: text, annotations: annos }

@@ -27,10 +27,10 @@ router.post('/',
                 console.log('importer is %o', importer);
                 return importer.import(fs.createReadStream(file.tempFilePath));
             })
-            .then(() => {
-                res.status(204).send("success");
+            .then((corpus) => {
+                res.status(200).send(corpus);
             })
-            .catch((err) => res.status(500).send({ status: "failure", error: err }));
+            .catch((err) => res.status(400).send({ status: "failure", error: err }));
     });
 
 
