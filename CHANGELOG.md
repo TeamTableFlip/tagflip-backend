@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/fhswf/tagflip-backend/compare/v1.1.0...v1.1.1) (2020-08-08)
+
+
+### Bug Fixes
+
+* return corpus object on import ([3a06500](https://github.com/fhswf/tagflip-backend/commit/3a06500a76078e23ffcf2691a0bf23d5b7bfa570))
+
 # [1.1.0](https://github.com/fhswf/tagflip-backend/compare/v1.0.1...v1.1.0) (2020-08-03)
 
 
