@@ -82,7 +82,7 @@ function mkdir(filepath) {
             resolve();
         }
         else {
-            fs.mkdir(path, {recursive: true}, (err) => {
+            fs.mkdir(filepath, {recursive: true}, (err) => {
                 if (err) reject(err);
                 else resolve();
             });
@@ -162,9 +162,7 @@ module.exports = {
     checkFileExists,
     mkdir,
     mkdirs,
-    readFileData,
     copyFile,
-    rmDir,
     unlinkFile,
     saveFileData
 };

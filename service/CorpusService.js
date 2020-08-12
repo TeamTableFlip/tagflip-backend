@@ -1,13 +1,12 @@
-let { corpusModel, annotationsetModel, documentModel, connection } = require('../persistence/sql/Models');
+let {corpusModel, annotationsetModel, documentModel, connection} = require('../persistence/sql/Models');
 let FileManager = require('../persistence/filesystem/FileManager');
 let BaseCrudServiceFunctions = require('./BaseCrudServiceFunctions');
-let DocumentService = require('./DocumentService');
+let documentService = require('./DocumentService');
 let config = require('../config/Config');
 let zip = require('../persistence/filesystem/Zippper');
 let path = require('path');
 let hashing = require('../persistence/Hashing');
-let fileType = require('file-type');
-let { UserError, SystemError, NotFoundError } = require('./Exceptions');
+let {UserError, NotFoundError} = require('./Exceptions');
 
 /**
  * custom query to get the number of associated documents for a gavin corpus a well as corpus data as a bit of visual sugar in the gui.
@@ -71,7 +70,7 @@ async function create(item) {
 async function del(id) {
     let corp = await corpusModel.findByPk(id);
     // get documents and delete them first (including files on disk)
-    await DocumentService.deleteMany(corp);
+    await documentService.deleteMany(corp);
     return BaseCrudServiceFunctions.del(id)(corpusModel, 'c_id');
 }
 
@@ -138,49 +137,32 @@ async function importFiles(c_id, uploadedFiles, prefix) {
     if (corpus === undefined || corpus === null)
         throw new NotFoundError("corpus with id " + c_id + " not found");
 
-    let docHashSet = new Set();
-
-    let corpusDocuments = await corpus.getDocuments();
-    for (let doc of corpusDocuments) {
-        docHashSet.add(doc.document_hash);
-    }
-
-    let dataBasesEntries = [];
     let skippedFiles = [];
+    let newDocuments = new Map();
 
     let _processFile = async (filePath, targetFileName) => {
         try {
-            let text = await FileManager.readFile(filePath, true);
+            let text = await FileManager.readFile(filePath);
             let hash = hashing.sha256Hash(text);
-            if (docHashSet.has(hash)) {
-                skippedFiles.push({
-                    item: {
-                        filename: targetFileName
-                    }, reason: "file content is already present in corpus"
-                });
-                return;
-            }
-            try {
-                await FileManager.moveFile(filePath, targetFileName, false, true);
-            } catch (e) {
-                console.error(e);
-                skippedFiles.push({
-                    item: {
-                        filename: targetFileName
-                    }, reason: "failed to move document into storage, reason: " + e.message
-                });
-                return;
-            }
-            let timestamp = Date.now();
-            let [doc, created] = await documentModel.findOrCreate({
-                where: {
+
+            let existingSameDocument = await documentService.findOneByCorpusIdAndHash(c_id, hash);
+            if (!existingSameDocument) {
+                let newDocument = await documentService.createOne({
                     c_id: c_id,
                     filename: targetFileName,
                     document_hash: hash,
-                    last_edited: timestamp
-                }
-            });
-            dataBasesEntries.push(doc);
+                    content: text
+                });
+                newDocuments.set(newDocument.document_hash, newDocument);
+            } else {
+                skippedFiles.push({
+                    item: {
+                        filename: targetFileName
+                    },
+                    reason: "file with same content already exists in corpus. file: " + existingSameDocument.filename + ", SHA256: " + existingSameDocument.document_hash
+                }); // should never happen
+            }
+            await FileManager.deleteFile(filePath);
         } catch (e) {
             console.error("caught error, skipping file: ", e);
             skippedFiles.push({
@@ -188,7 +170,6 @@ async function importFiles(c_id, uploadedFiles, prefix) {
                     filename: targetFileName
                 }, reason: "failed to create database entry"
             });
-            await FileManager.deleteFile(targetFileName);
             return;
         }
         console.debug("finished file import for new file: ", targetFileName);
@@ -202,11 +183,11 @@ async function importFiles(c_id, uploadedFiles, prefix) {
             let result = await zip.extractZip(possibleZipFile.tempFilePath);
             for (let file of result.files) { // many files from zip extract
                 let targetFileName = null;
-                if (file.startsWith(config.files.unzipBuffer)) {
+                if (path.normalize(file).startsWith(path.normalize(config.files.unzipBuffer))) {
                     if (prefix && prefix.length > 0)
-                        targetFileName = path.join(c_id.toString(), prefix, possibleZipFile.name, file.slice(config.files.unzipBuffer.length));
+                        targetFileName = path.join(prefix, file.slice(result.parentFolder.length));
                     else
-                        targetFileName = path.join(c_id.toString(), possibleZipFile.name, file.slice(config.files.unzipBuffer.length));
+                        targetFileName = file.slice(result.parentFolder.length + 1);
                     let type = await FileManager.checkFileType(file);
                     if (!(type.ext === 'txt' || type.ext === 'ics' || type.ext === 'xml')) {
                         skippedFiles.push({
@@ -225,14 +206,18 @@ async function importFiles(c_id, uploadedFiles, prefix) {
                     continue;
                 }
                 await _processFile(file, targetFileName);
+
             }
+            await FileManager.deleteFile(possibleZipFile.tempFilePath);
+            await FileManager.deleteFile(result.parentFolder);
+
         } else if (possibleZipFile.mimetype === "text/plain") {
             let targetFileName = null;
             if (prefix && prefix.length > 0)
-                targetFileName = path.join(c_id.toString(), prefix, possibleZipFile.name);
+                targetFileName = path.join(prefix, possibleZipFile.name);
             else
-                targetFileName = path.join(c_id.toString(), possibleZipFile.name);
-            await _processFile(possibleZipFile.tempFilePath, targetFileName)
+                targetFileName = path.join(possibleZipFile.name);
+            await _processFile(possibleZipFile.tempFilePath, targetFileName);
         } else {
             skippedFiles.push({
                 item: {
@@ -254,11 +239,10 @@ async function importFiles(c_id, uploadedFiles, prefix) {
     }
 
     return {
-        "items": dataBasesEntries,
+        "items": [...newDocuments.values()],
         "skippedItems": skippedFiles
     };
 }
-
 
 
 async function exportJson() {

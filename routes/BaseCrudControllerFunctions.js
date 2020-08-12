@@ -213,7 +213,7 @@ function importWrapper(importFunc, propertyName) {
                     res.sendStatus(500);
             })
             .catch(_errorHandler(res));
-    }
+    };
 }
 
 module.exports = {

@@ -23,14 +23,19 @@ let document =  (connection) => {
             type: DataTypes.STRING(255),
             allowNull: false
         },
-        last_edited: {
-            type: DataTypes.DATE,
-            allowNull: true
+        content: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            unique: 'unique_doc_per_corpus'
         },
         document_hash: {
             type: DataTypes.CHAR(64),
             allowNull: false,
             unique: 'unique_doc_per_corpus'
+        },
+        last_edited: {
+            type: DataTypes.DATE,
+            allowNull: true
         }
     }, {
         timestamps: false,
