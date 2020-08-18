@@ -10,8 +10,6 @@
     "user": "root"
   },
   "files": {
-    "prefix": "/mnt/tagflip/data",
-    "temp": "/mnt/tagflip/temp/uploadBuffer",
-    "unzipBuffer": "/mnt/tagflip/temp/unzipBuffer"
+    "temp": "/mnt/tagflip/temp/uploadBuffer"
   }
 }

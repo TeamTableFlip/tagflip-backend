@@ -1,0 +1,6 @@
+{
+  "swagger": {
+    "outputDirectory": "./src/public",
+    "entryFile": "./src/index.ts"
+  }
+}
