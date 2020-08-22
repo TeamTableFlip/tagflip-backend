@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/fhswf/tagflip-backend/compare/v1.1.1...v1.2.0) (2020-08-22)
+
+
+### Features
+
+* persisting documents to DB instead of filesystem. ([5c577b9](https://github.com/fhswf/tagflip-backend/commit/5c577b95b8b28cedc355fd66eb63c1a15118dec4))
+
 ## [1.1.1](https://github.com/fhswf/tagflip-backend/compare/v1.1.0...v1.1.1) (2020-08-08)
 
 
