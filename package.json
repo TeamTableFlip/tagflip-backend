@@ -62,7 +62,6 @@
     "sequelize": "^5.22.2",
     "sequelize-typescript": "^1.1.0",
     "stream-buffers": "^3.0.2",
-    "tagflip-common": "file:../tagflip-common",
     "tmp": "^0.2.1",
     "typescript-ioc": "^3.2.2",
     "typescript-rest": "^3.0.1",

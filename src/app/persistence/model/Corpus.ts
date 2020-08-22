@@ -12,7 +12,7 @@ import {
 import {AnnotationSet} from "./AnnotationSet";
 import {Document} from "./Document";
 import {CorpusToAnnotationSet} from "./CorpusToAnnotationSet";
-import {CorpusAttributes} from "tagflip-common";
+import {CorpusAttributes} from "@fhswf/tagflip-common";
 import {HasManyAddAssociationMixin, HasManyGetAssociationsMixin, HasManyRemoveAssociationMixin} from "sequelize";
 import {Annotation} from "./Annotation";
 

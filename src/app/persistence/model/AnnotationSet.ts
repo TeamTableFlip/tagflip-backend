@@ -13,7 +13,7 @@ import {Corpus} from "./Corpus";
 import {CorpusToAnnotationSet} from "./CorpusToAnnotationSet";
 import {Annotation} from "./Annotation";
 import {HasManyAddAssociationMixin, HasManyGetAssociationsMixin} from "sequelize";
-import {AnnotationSetAttributes} from "tagflip-common";
+import {AnnotationSetAttributes} from "@fhswf/tagflip-common";
 
 @Table({
     tableName: "annotationset"

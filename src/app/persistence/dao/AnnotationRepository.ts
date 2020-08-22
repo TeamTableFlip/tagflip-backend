@@ -5,7 +5,7 @@ import {Identifier} from "sequelize";
 import {Annotation} from "../model/Annotation";
 import {ValidationError} from "../../exception/ValidationError";
 import * as HttpStatus from "http-status-codes";
-import {TagFlipErrorCode} from "tagflip-common";
+import {TagFlipErrorCode} from "@fhswf/tagflip-common";
 
 @Singleton
 export class AnnotationRepository extends GenericRepository<Annotation>{

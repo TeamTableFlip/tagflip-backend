@@ -10,7 +10,7 @@ import {
     ForeignKey, Is
 } from 'sequelize-typescript';
 import {AnnotationSet} from "./AnnotationSet";
-import {AnnotationAttributes} from "tagflip-common";
+import {AnnotationAttributes} from "@fhswf/tagflip-common";
 
 @Table({
     tableName: "annotation"

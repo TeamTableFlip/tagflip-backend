@@ -11,7 +11,7 @@ import {
 } from 'sequelize-typescript';
 import {Tag} from "./Tag";
 import {Corpus} from "./Corpus";
-import {DocumentAttributes} from "tagflip-common";
+import {DocumentAttributes} from "@fhswf/tagflip-common";
 import {BuildOptions, HasManyGetAssociationsMixin} from "sequelize";
 
 @DefaultScope(() => ({

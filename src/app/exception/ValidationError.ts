@@ -1,5 +1,5 @@
 import {HttpError} from "typescript-rest/dist/server/model/errors";
-import {TagFlipErrorCode, TagFlipError} from "tagflip-common";
+import {TagFlipErrorCode, TagFlipError} from "@fhswf/tagflip-common";
 
 export class ValidationError extends HttpError implements TagFlipError {
 
