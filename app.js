@@ -30,9 +30,9 @@ let importRouter = require('./routes/ImportController');
 let corsOptions = {
   origin: function (origin, callback) {
     if (!origin || config.allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true)
+      callback(null, true);
     } else {
-      callback(new Error(`Origin ${origin} not allowed by CORS`))
+      callback(new Error(`Origin ${origin} not allowed by CORS`));
     }
   },
   credentials: true

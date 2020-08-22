@@ -23,7 +23,7 @@ async function checkFileType(filePath) {
         if (r)
             return r; //=> {ext: 'png', mime: 'image/png'}
         else // undefined => probably text or some unknown format
-            return { ext: 'txt', mime: 'text/plain' };
+            return {ext: 'txt', mime: 'text/plain'};
     } else {
         throw Error("file not found");
     }
@@ -34,16 +34,14 @@ async function checkFileType(filePath) {
  * if external is false, fileName will be prefixed with config.files.prefix witch determines the data location for all files in the database.
  * if external is true fileName will interpreted as a fixed absolute path.
  *
- * @param fileName: filePath
+ * @param filePath: filePath
  * @param external: boolean
  * @returns {Promise<string>}
  */
-function readFile(fileName, external = false) {
-    if (!external)
-        fileName = path.join(config.files.prefix, fileName);
-    console.info("reading file: " + fileName);
-    return fsPromises.access(fileName, fs.R_OK)
-        .then(() => fsPromises.readFile(fileName, "utf-8"))
+function readFile(filePath) {
+    console.info("reading file: " + filePath);
+    return fsPromises.access(filePath, fs.R_OK)
+        .then(() => fsPromises.readFile(filePath, "utf-8"));
 }
 
 /**
@@ -55,14 +53,13 @@ function readFile(fileName, external = false) {
  * @param data: some string or byte data
  * @returns {Promise<*>}
  */
-async function saveFile(fileName, override = false, data) {
-    console.info("saving file: " + fileName);
-    fileName = path.join(config.files.prefix, fileName);
-    await fileUtils.mkdirs(fileName);
-    if (!override && (await fileUtils.checkFileExists(fileName))) {
+async function saveFile(filePath, override = false, data = null) {
+    console.info("saving file: " + filePath);
+    await fileUtils.mkdirs(filePath);
+    if (!override && (await fileUtils.checkFileExists(filePath))) {
         throw Error("file with that path and name already exists! (override false)");
     }
-    return await fileUtils.saveFileData(fileName, data);
+    return await fileUtils.saveFileData(filePath, data);
 }
 
 /**
@@ -71,14 +68,17 @@ async function saveFile(fileName, override = false, data) {
  * @param fileName
  * @returns {Promise<void>}
  */
-async function deleteFile(fileName) {
-    console.info("deleting file: " + fileName);
-    fileName = path.join(config.files.prefix, fileName);
-    if (!(await fileUtils.checkFileExists(fileName))) {
+async function deleteFile(filePath) {
+    console.info("deleting: " + filePath);
+    if (!(await fileUtils.checkFileExists(filePath))) {
         console.warn("refusing to delete non-existing file: %s", fileName);
         return;
     }
-    fileUtils.unlinkFile(fileName);
+    if (fs.lstatSync(filePath).isDirectory()) {
+        fs.rmdirSync(filePath,  {recursive: true});
+    } else {
+        fileUtils.unlinkFile(filePath);
+    }
 }
 
 /**
