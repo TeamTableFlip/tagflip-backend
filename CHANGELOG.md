@@ -19,7 +19,7 @@
 
 * fix error handling in DocumentService ([5d048de](https://github.com/fhswf/tagflip-backend/commit/5d048de8b4459b610b837d267a05c79611a6e0e9))
 * fix one-off error ([11e03f3](https://github.com/fhswf/tagflip-backend/commit/11e03f32756ac00d82a76e1566509dbe0121dd85))
-* reference to index.js in package.json ([0e3e4f6](https://github.com/fhswf/tagflip-backend/commit/0e3e4f6a740a080458426da7db25f3013a3ba587))
+* reference to index.js.bak in package.json ([0e3e4f6](https://github.com/fhswf/tagflip-backend/commit/0e3e4f6a740a080458426da7db25f3013a3ba587))
 
 
 ### Features
