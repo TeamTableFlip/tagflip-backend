@@ -30,7 +30,8 @@ logs
 .lock-wscript
 
 # Compiled binary addons (http://nodejs.org/api/addons.html)
-build/Release
+build/**
+
 
 # Dependency directory
 node_modules
@@ -40,3 +41,4 @@ node_modules
 /config/*secret*
 docker.env
 /schema/TagFlip.mwb.bak
+

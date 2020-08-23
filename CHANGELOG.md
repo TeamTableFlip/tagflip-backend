@@ -1,3 +1,11 @@
+## [1.2.1](https://github.com/fhswf/tagflip-backend/compare/v1.2.0...v1.2.1) (2020-08-23)
+
+
+### Bug Fixes
+
+* build dependency on npmjs.org ([2b595db](https://github.com/fhswf/tagflip-backend/commit/2b595db5e4705ffb1c70f4e446d15cd9108e5df3))
+* references to @fhswf/tagflip-common ([5e857e8](https://github.com/fhswf/tagflip-backend/commit/5e857e8b9bf765e56e066135769766a3801ab9da))
+
 # [1.2.0](https://github.com/fhswf/tagflip-backend/compare/v1.1.1...v1.2.0) (2020-08-22)
 
 
