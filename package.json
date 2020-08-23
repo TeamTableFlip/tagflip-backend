@@ -41,7 +41,7 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@fhswf/tagflip-common": "^1.0.1",
+    "@fhswf/tagflip-common": "^1.0.2",
     "@types/express": "^4.17.7",
     "chardet": "^1.2.1",
     "cookie-parser": "~1.4.4",
