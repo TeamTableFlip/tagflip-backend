@@ -173,11 +173,15 @@ class NoStaDImporter {
 
         if (newTags.length > 0) {
             try {
-                let annotationSet: AnnotationSet = await this.annotationSetRepository.save({
-                    name: annotationSetName,
-                    description: "Imported from " + file.filename
-                } as AnnotationSet)
+                // if there is altready an AnnotationSet with the requested name, use and amend it
+                let mayBeAnnotationSet = await this.annotationSetRepository.getByName(annotationSetName)
+                let annotationSet: AnnotationSet = mayBeAnnotationSet ? mayBeAnnotationSet :
+                    await this.annotationSetRepository.save({
+                        name: annotationSetName,
+                        description: "Imported from " + file.filename
+                    } as AnnotationSet)
                 corpus.addAnnotationSet(annotationSet)
+
                 this.corpusRepository.save(corpus)
 
                 newTags.forEach(async (name) => {
