@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/fhswf/tagflip-backend/compare/v1.2.2...v1.3.0) (2020-08-23)
+
+
+### Features
+
+* Import of NoSta-D documents ([73b0393](https://github.com/fhswf/tagflip-backend/commit/73b0393f5df596e39036567d56fd7eb73df91231))
+
 ## [1.2.2](https://github.com/fhswf/tagflip-backend/compare/v1.2.1...v1.2.2) (2020-08-23)
 
 
