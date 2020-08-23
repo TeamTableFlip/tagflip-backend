@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/fhswf/tagflip-backend/compare/v1.3.0...v1.3.1) (2020-08-23)
+
+
+### Bug Fixes
+
+* amend existing annotation set ([39b38ef](https://github.com/fhswf/tagflip-backend/commit/39b38efc01db73d497236ea91dbe80d5b20e403b))
+
 # [1.3.0](https://github.com/fhswf/tagflip-backend/compare/v1.2.2...v1.3.0) (2020-08-23)
 
 
