@@ -1,3 +1,24 @@
+## [1.3.1](https://github.com/fhswf/tagflip-backend/compare/v1.3.0...v1.3.1) (2020-08-23)
+
+
+### Bug Fixes
+
+* amend existing annotation set ([39b38ef](https://github.com/fhswf/tagflip-backend/commit/39b38efc01db73d497236ea91dbe80d5b20e403b))
+
+# [1.3.0](https://github.com/fhswf/tagflip-backend/compare/v1.2.2...v1.3.0) (2020-08-23)
+
+
+### Features
+
+* Import of NoSta-D documents ([73b0393](https://github.com/fhswf/tagflip-backend/commit/73b0393f5df596e39036567d56fd7eb73df91231))
+
+## [1.2.2](https://github.com/fhswf/tagflip-backend/compare/v1.2.1...v1.2.2) (2020-08-23)
+
+
+### Bug Fixes
+
+* Added missing schema. ([d34a641](https://github.com/fhswf/tagflip-backend/commit/d34a6415a1787936d1a033a5809d35171f2bf071))
+
 ## [1.2.1](https://github.com/fhswf/tagflip-backend/compare/v1.2.0...v1.2.1) (2020-08-23)
 
 

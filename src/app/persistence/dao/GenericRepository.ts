@@ -43,6 +43,10 @@ export abstract class GenericRepository<T extends Model<T>> {
         return this.repository.findAll();
     }
 
+    public async getByName(name: string): Promise<T | null> {
+        return this.repository.findOne({ where: { name: name } })
+    }
+
     public async count(options?:CountOptions): Promise<number> {
         return this.repository.count(options)
     }
