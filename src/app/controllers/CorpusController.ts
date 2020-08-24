@@ -70,11 +70,4 @@ export class CorpusController {
         corpus.removeAnnotationSet(annotationSet)
     }
 
-    @Path(":corpusId/document")
-    @GET
-    public async listDocuments(@PathParam("corpusId") corpusId: number): Promise<Document[]> {
-        let corpus = await this.corpusRepository.read(corpusId);
-        return corpus.getDocuments();
-    }
-
 }
