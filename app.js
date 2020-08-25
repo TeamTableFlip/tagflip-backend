@@ -24,14 +24,15 @@ let documentRouter = require('./routes/DocumentController');
 let annotationSetRouter = require('./routes/AnnotationSetController');
 let annotationRouter = require('./routes/AnnotationController');
 let tagRouter = require('./routes/TagController');
+let importRouter = require('./routes/ImportController');
 
 // configure cors
 let corsOptions = {
   origin: function (origin, callback) {
     if (!origin || config.allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true)
+      callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'))
+      callback(new Error(`Origin ${origin} not allowed by CORS`));
     }
   },
   credentials: true
@@ -47,7 +48,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public'))); // configure later with GUI...
 
 // Simulate delay
-if(config.delayResponse > 0) {
+if (config.delayResponse > 0) {
   app.use((req, res, next) => {
     setTimeout(() => next(), config.delayResponse);
   });
@@ -60,9 +61,10 @@ app.use('/annotation', annotationRouter);
 app.use('/tag', tagRouter);
 app.use('/annotationset', annotationSetRouter);
 app.use('/document', documentRouter);
+app.use('/import', importRouter);
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

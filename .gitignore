@@ -30,13 +30,15 @@ logs
 .lock-wscript
 
 # Compiled binary addons (http://nodejs.org/api/addons.html)
-build/Release
+build/**
+
 
 # Dependency directory
 node_modules
-package-lock.json
-
 
 # user secrets and configs
 /config/local*
 /config/*secret*
+docker.env
+/schema/TagFlip.mwb.bak
+

@@ -11,13 +11,12 @@
   "db": {
     "name": "tagflip",
     "host": "localhost",
+    "port": 3306,
     "dialect": "mysql",
     "password": "",
     "user": "root"
   },
   "files": {
-    "prefix": "~/tagflip/data",
-    "temp": "~/tagflip/temp",
-    "unzipBuffer": "~/tagflip/temp/unzipBuffer"
+    "temp": "~/tagflip/temp"
   }
 }

@@ -2,5 +2,13 @@
     "serverPort": 3000,
     "sequelize": {
         "connection": "localhost"
+    },
+    "db": {
+        "name": "tagflip",
+        "host": "localhost",
+        "port": 32812,
+        "dialect": "mysql",
+        "password": "tagflip",
+        "user": "root"
     }
 }
