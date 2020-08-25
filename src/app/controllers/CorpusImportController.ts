@@ -1,24 +1,13 @@
-import {
-    DELETE,
-    Errors,
-    FileParam,
-    FilesParam,
-    FormParam,
-    GET,
-    Path,
-    PathParam,
-    POST,
-    PreProcessor
-} from "typescript-rest";
-import { Inject } from "typescript-ioc";
-import { Corpus } from '../persistence/model/Corpus';
-import { BadRequestError } from 'typescript-rest/dist/server/model/errors';
-import { CorpusImportService } from '../services/documentImport/CorpusImportService';
-import { AnnotationSetRepository } from '../persistence/dao/AnnotationSetRepository';
+import {FilesParam, FormParam, Path, POST} from "typescript-rest";
+import {Inject} from "typescript-ioc";
+import {Corpus} from '../persistence/model/Corpus';
+import {BadRequestError} from 'typescript-rest/dist/server/model/errors';
+import {CorpusImportService} from '../services/corpusImport/CorpusImportService';
+import {AnnotationSetRepository} from '../persistence/dao/AnnotationSetRepository';
 
 
 @Path("corpus/import")
-export class ImportController {
+export class CorpusImportController {
 
     @Inject
     private annotationSetRepository!: AnnotationSetRepository;
