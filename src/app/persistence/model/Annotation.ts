@@ -19,7 +19,7 @@ export class Annotation extends Model<Annotation> implements AnnotationAttribute
 
     @PrimaryKey
     @AutoIncrement
-    @Column({ field:"annotation_id" })
+    @Column
     annotationId!: number
 
     @Column
@@ -30,14 +30,14 @@ export class Annotation extends Model<Annotation> implements AnnotationAttribute
     color!: string;
 
     @ForeignKey(() => AnnotationSet)
-    @Column({field: 'annotationset_id'})
+    @Column
     annotationSetId!: number;
 
     @CreatedAt
-    @Column({field:'created_at'})
+    @Column
     createdAt!: Date
 
     @UpdatedAt
-    @Column({field:'updated_at'})
+    @Column
     updatedAt!: Date
 }

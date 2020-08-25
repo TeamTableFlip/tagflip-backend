@@ -29,17 +29,17 @@ export class Document extends Model<Document> implements DocumentAttributes{
 
     @PrimaryKey
     @AutoIncrement
-    @Column({field: "document_id"})
+    @Column
     documentId!: number
 
     @ForeignKey(() => Corpus)
-    @Column({field: 'corpus_id'})
+    @Column
     corpusId!: number;
 
     @Column
     filename!: string;
 
-    @Column({field: "document_hash"})
+    @Column
     documentHash!: string;
 
     @AllowNull
@@ -47,11 +47,11 @@ export class Document extends Model<Document> implements DocumentAttributes{
     content?: string;
 
     @CreatedAt
-    @Column({field:'created_at'})
+    @Column
     createdAt!: Date
 
     @UpdatedAt
-    @Column({field:'updated_at'})
+    @Column
     updatedAt!: Date
 
     @HasMany(() => Tag)

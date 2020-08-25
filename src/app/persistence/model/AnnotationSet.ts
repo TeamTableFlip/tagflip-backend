@@ -22,7 +22,7 @@ export class AnnotationSet extends Model<AnnotationSet> implements AnnotationSet
 
     @PrimaryKey
     @AutoIncrement
-    @Column({ field:"annotationset_id" })
+    @Column
     annotationSetId!: number
 
     @Column
@@ -39,11 +39,11 @@ export class AnnotationSet extends Model<AnnotationSet> implements AnnotationSet
     corpus!: Corpus[];
 
     @CreatedAt
-    @Column({field:'created_at'})
+    @Column
     createdAt!: Date
 
     @UpdatedAt
-    @Column({field:'updated_at'})
+    @Column
     updatedAt!: Date
 
     public getAnnotations!: HasManyGetAssociationsMixin<Annotation>;

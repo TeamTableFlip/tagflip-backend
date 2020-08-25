@@ -7,19 +7,19 @@ import {AnnotationSet} from "./AnnotationSet";
 })
 export class CorpusToAnnotationSet extends Model<CorpusToAnnotationSet> {
 
-    @Column({ field:"corpus_id" })
+    @Column
     @ForeignKey(() => Corpus)
     corpusId!: number;
 
-    @Column({ field:"annotationset_id" })
+    @Column
     @ForeignKey(() => AnnotationSet)
     annotationSetId!: number;
 
     @CreatedAt
-    @Column({field:'created_at'})
+    @Column
     createdAt!: Date
 
     @UpdatedAt
-    @Column({field:'updated_at'})
+    @Column
     updatedAt!: Date
 }

@@ -24,12 +24,12 @@ USE `tagflip` ;
 DROP TABLE IF EXISTS `tagflip`.`annotationset` ;
 
 CREATE TABLE IF NOT EXISTS `tagflip`.`annotationset` (
-  `annotationset_id` INT(11) NOT NULL AUTO_INCREMENT,
+  `annotationSetId` INT(11) NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(100) NOT NULL,
   `description` TEXT NULL DEFAULT NULL,
-  `created_at` DATETIME NULL DEFAULT NULL,
-  `updated_at` DATETIME NULL DEFAULT NULL,
-  PRIMARY KEY (`annotationset_id`),
+  `createdAt` DATETIME NULL DEFAULT NULL,
+  `updatedAt` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`annotationSetId`),
   UNIQUE INDEX `name` (`name` ASC))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
@@ -41,18 +41,18 @@ DEFAULT CHARACTER SET = utf8;
 DROP TABLE IF EXISTS `tagflip`.`annotation` ;
 
 CREATE TABLE IF NOT EXISTS `tagflip`.`annotation` (
-  `annotation_id` INT(11) NOT NULL AUTO_INCREMENT,
-  `annotationset_id` INT(11) NOT NULL,
+  `annotationId` INT(11) NOT NULL AUTO_INCREMENT,
+  `annotationSetId` INT(11) NOT NULL,
   `name` VARCHAR(50) NOT NULL,
   `color` CHAR(7) NOT NULL DEFAULT '#bbbbbb',
-  `created_at` DATETIME NULL DEFAULT NULL,
-  `updated_at` DATETIME NULL DEFAULT NULL,
-  PRIMARY KEY (`annotation_id`),
-  UNIQUE INDEX `UK_AnnotationSet_AnnotationName` (`annotationset_id` ASC, `name` ASC),
-  INDEX `FKannotation324602` (`annotationset_id` ASC),
+  `createdAt` DATETIME NULL DEFAULT NULL,
+  `updatedAt` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`annotationId`),
+  UNIQUE INDEX `UK_AnnotationSet_AnnotationName` (`annotationSetId` ASC, `name` ASC),
+  INDEX `FKannotation324602` (`annotationSetId` ASC),
   CONSTRAINT `FKannotation324602`
-    FOREIGN KEY (`annotationset_id`)
-    REFERENCES `tagflip`.`annotationset` (`annotationset_id`)
+    FOREIGN KEY (`annotationSetId`)
+    REFERENCES `tagflip`.`annotationset` (`annotationSetId`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
@@ -64,12 +64,12 @@ DEFAULT CHARACTER SET = utf8;
 DROP TABLE IF EXISTS `tagflip`.`corpus` ;
 
 CREATE TABLE IF NOT EXISTS `tagflip`.`corpus` (
-  `corpus_id` INT(11) NOT NULL AUTO_INCREMENT,
+  `corpusId` INT(11) NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(255) NOT NULL,
   `description` TEXT NULL,
-  `created_at` DATETIME NULL DEFAULT NULL,
-  `updated_at` DATETIME NULL DEFAULT NULL,
-  PRIMARY KEY (`corpus_id`),
+  `createdAt` DATETIME NULL DEFAULT NULL,
+  `updatedAt` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`corpusId`),
   UNIQUE INDEX `name` (`name` ASC))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
@@ -81,20 +81,20 @@ DEFAULT CHARACTER SET = utf8;
 DROP TABLE IF EXISTS `tagflip`.`corpus_to_annotationset` ;
 
 CREATE TABLE IF NOT EXISTS `tagflip`.`corpus_to_annotationset` (
-  `corpus_id` INT(11) NOT NULL,
-  `annotationset_id` INT(11) NOT NULL,
-  `created_at` DATETIME NULL DEFAULT NULL,
-  `updated_at` DATETIME NULL DEFAULT NULL,
-  PRIMARY KEY (`corpus_id`, `annotationset_id`),
-  INDEX `FKcorpus_ann848816` (`annotationset_id` ASC),
-  INDEX `FKcorpus_ann874314` (`corpus_id` ASC),
+  `corpusId` INT(11) NOT NULL,
+  `annotationSetId` INT(11) NOT NULL,
+  `createdAt` DATETIME NULL DEFAULT NULL,
+  `updatedAt` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`corpusId`, `annotationSetId`),
+  INDEX `FKcorpus_ann848816` (`annotationSetId` ASC),
+  INDEX `FKcorpus_ann874314` (`corpusId` ASC),
   CONSTRAINT `FKcorpus_ann848816`
-    FOREIGN KEY (`annotationset_id`)
-    REFERENCES `tagflip`.`annotationset` (`annotationset_id`)
+    FOREIGN KEY (`annotationSetId`)
+    REFERENCES `tagflip`.`annotationset` (`annotationSetId`)
     ON DELETE CASCADE,
   CONSTRAINT `FKcorpus_ann874314`
-    FOREIGN KEY (`corpus_id`)
-    REFERENCES `tagflip`.`corpus` (`corpus_id`)
+    FOREIGN KEY (`corpusId`)
+    REFERENCES `tagflip`.`corpus` (`corpusId`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
@@ -106,19 +106,19 @@ DEFAULT CHARACTER SET = utf8;
 DROP TABLE IF EXISTS `tagflip`.`document` ;
 
 CREATE TABLE IF NOT EXISTS `tagflip`.`document` (
-  `document_id` INT(11) NOT NULL AUTO_INCREMENT,
-  `corpus_id` INT(11) NOT NULL,
+  `documentId` INT(11) NOT NULL AUTO_INCREMENT,
+  `corpusId` INT(11) NOT NULL,
   `filename` VARCHAR(255) NOT NULL,
-  `document_hash` CHAR(64) NOT NULL COMMENT 'SHA-256',
+  `documentHash` CHAR(64) NOT NULL COMMENT 'SHA-256',
   `content` LONGTEXT NULL DEFAULT NULL,
-  `created_at` DATETIME NULL DEFAULT NULL,
-  `updated_at` DATETIME NULL DEFAULT NULL,
-  PRIMARY KEY (`document_id`),
-  UNIQUE INDEX `UK_Document_CorpusHash` (`corpus_id` ASC, `document_hash` ASC),
-  INDEX `FKdocument854677` (`corpus_id` ASC),
+  `createdAt` DATETIME NULL DEFAULT NULL,
+  `updatedAt` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`documentId`),
+  UNIQUE INDEX `UK_Document_CorpusHash` (`corpusId` ASC, `documentHash` ASC),
+  INDEX `FKdocument854677` (`corpusId` ASC),
   CONSTRAINT `FKdocument854677`
-    FOREIGN KEY (`corpus_id`)
-    REFERENCES `tagflip`.`corpus` (`corpus_id`)
+    FOREIGN KEY (`corpusId`)
+    REFERENCES `tagflip`.`corpus` (`corpusId`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
@@ -130,23 +130,23 @@ DEFAULT CHARACTER SET = utf8;
 DROP TABLE IF EXISTS `tagflip`.`tag` ;
 
 CREATE TABLE IF NOT EXISTS `tagflip`.`tag` (
-  `tag_id` INT(11) NOT NULL AUTO_INCREMENT,
-  `annotation_id` INT(11) NOT NULL,
-  `document_id` INT(11) NOT NULL,
-  `start_index` INT(11) NOT NULL,
-  `end_index` INT(11) NOT NULL,
-  `created_at` DATETIME NULL DEFAULT NULL,
-  `updated_at` DATETIME NULL DEFAULT NULL,
-  PRIMARY KEY (`tag_id`),
-  INDEX `FKtag983812` (`document_id` ASC),
-  INDEX `FKtag961745` (`annotation_id` ASC),
+  `tagId` INT(11) NOT NULL AUTO_INCREMENT,
+  `annotationId` INT(11) NOT NULL,
+  `documentId` INT(11) NOT NULL,
+  `startIndex` INT(11) NOT NULL,
+  `endIndex` INT(11) NOT NULL,
+  `createdAt` DATETIME NULL DEFAULT NULL,
+  `updatedAt` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`tagId`),
+  INDEX `FKtag983812` (`documentId` ASC),
+  INDEX `FKtag961745` (`annotationId` ASC),
   CONSTRAINT `FKtag961745`
-    FOREIGN KEY (`annotation_id`)
-    REFERENCES `tagflip`.`annotation` (`annotation_id`)
+    FOREIGN KEY (`annotationId`)
+    REFERENCES `tagflip`.`annotation` (`annotationId`)
     ON DELETE CASCADE,
   CONSTRAINT `FKtag983812`
-    FOREIGN KEY (`document_id`)
-    REFERENCES `tagflip`.`document` (`document_id`)
+    FOREIGN KEY (`documentId`)
+    REFERENCES `tagflip`.`document` (`documentId`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;

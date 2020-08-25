@@ -10,29 +10,29 @@ export class Tag extends Model<Tag> implements TagAttributes{
 
     @PrimaryKey
     @AutoIncrement
-    @Column({ field:"tag_id" })
+    @Column
     tagId!: number
 
-    @Column({ field:"start_index" })
+    @Column
     startIndex!: number;
 
-    @Column({ field:"end_index" })
+    @Column
     endIndex!: number;
 
     @ForeignKey(() => Document)
-    @Column({field: 'document_id'})
+    @Column
     documentId!: number;
 
     @ForeignKey(() => Annotation)
-    @Column({field: 'annotation_id'})
+    @Column
     annotationId!: number;
 
     @CreatedAt
-    @Column({field:'created_at'})
+    @Column
     createdAt!: Date
 
     @UpdatedAt
-    @Column({field:'updated_at'})
+    @Column
     updatedAt!: Date
 
 

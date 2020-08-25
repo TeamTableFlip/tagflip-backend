@@ -1,22 +1,14 @@
-import {
-    DELETE,
-    Errors,
-    FileParam,
-    FilesParam,
-    FormParam,
-    GET,
-    Path,
-    PathParam,
-    POST,
-    PreProcessor, QueryParam
-} from "typescript-rest";
+import {DELETE, Errors, FilesParam, GET, Path, PathParam, POST, QueryParam} from "typescript-rest";
 import {Inject} from "typescript-ioc";
 import {CorpusRepository} from "../persistence/dao/CorpusRepository";
 import {DocumentRepository} from "../persistence/dao/DocumentRepository";
 import {DocumentImportService} from "../services/documentImport/DocumentImportService";
 import {Document} from "../persistence/model/Document";
-import {Annotation} from "../persistence/model/Annotation";
-import {OrderItem, where} from "sequelize";
+import {Op, OrderItem} from "sequelize";
+import {SearchFilter} from "@fhswf/tagflip-common"
+import "reflect-metadata";
+import SearchFilterImpl, {ConvertSearchFilter, SearchFilterParam} from "./util/SearchFilter";
+
 
 @Path("corpus/:corpusId/document")
 export class DocumentController {
@@ -31,29 +23,29 @@ export class DocumentController {
     private documentImportService!: DocumentImportService;
 
     @GET
+    @ConvertSearchFilter
     public async listDocuments(@PathParam("corpusId") corpusId: number,
                                @QueryParam("count") count?: boolean,
                                @QueryParam("offset") offset?: number,
                                @QueryParam("limit")  limit?: number,
-                               @QueryParam("sortField")  sortField?: string,
-                               @QueryParam("sortOrder")  sortOrder?: string,
-                               ): Promise<Document[] | number> {
-        if(count) {
-            return this.documentRepository.count({
-                where: {corpusId}
-            });
+                               @QueryParam("sortField")  sortField: string = "documentId",
+                               @QueryParam("sortOrder")  sortOrder: string = "ASC",
+                               @QueryParam("searchFilter") @SearchFilterParam searchFilter?: SearchFilter[]
+    ): Promise<Document[] | number> {
+        if (count) {
+            if (searchFilter) {
+                return this.documentRepository.count({where: {[Op.and]: [corpusId, searchFilter.map(s => SearchFilterImpl.toSequelize(s))]}})
+            }
+            return this.documentRepository.count({where: {corpusId}});
         }
 
         let corpus = await this.corpusRepository.read(corpusId);
-        let orderBy : OrderItem = ['documentId', 'ASC']
-        if(sortField && sortOrder) {
-            orderBy = [sortField, sortOrder]
+        let options = {limit, offset, order: [[sortField, sortOrder] as OrderItem]}
+        if (searchFilter) {
+            Object.assign(options, {where: {[Op.and]: searchFilter.map(s => SearchFilterImpl.toSequelize(s))}})
         }
-        return corpus.getDocuments({
-            limit,
-            offset,
-            order: [orderBy]
-        });
+
+        return corpus.getDocuments(options);
     }
 
     @Path(":id")

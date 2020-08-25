@@ -23,7 +23,7 @@ export class Corpus extends Model<Corpus> implements CorpusAttributes{
 
     @PrimaryKey
     @AutoIncrement
-    @Column({ field:"corpus_id" })
+    @Column
     corpusId!: number
 
     @Column
@@ -40,11 +40,11 @@ export class Corpus extends Model<Corpus> implements CorpusAttributes{
     documents!: Document[];
 
     @CreatedAt
-    @Column({field:'created_at'})
+    @Column
     createdAt!: Date
 
     @UpdatedAt
-    @Column({field:'updated_at'})
+    @Column
     updatedAt!: Date
 
     public addAnnotationSet!: HasManyAddAssociationMixin<AnnotationSet, number>;
