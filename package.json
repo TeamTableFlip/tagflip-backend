@@ -50,7 +50,7 @@
     "express": "^4.17.1",
     "express-fileupload": "~1.1.6",
     "http-status-codes": "^1.4.0",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "mariadb": "^2.4.2",
     "mime-types": "^2.1.27",
     "morgan": "~1.9.1",
